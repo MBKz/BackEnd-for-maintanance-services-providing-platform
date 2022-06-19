@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('blocks', function (Blueprint $table) {
             $table->increments('id');
-            $table->dateTime('startDate');
-            $table->dateTime('endDate');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->integer('duiation');
             $table->integer('service_provider_id')->unsigned();
             $table->foreign('service_provider_id')->references('id')->on('service_providers')->onDelete('cascade');
