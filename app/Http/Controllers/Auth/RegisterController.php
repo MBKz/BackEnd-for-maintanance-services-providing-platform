@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller implements RegisterInterface
 {
-  
+
     public function registerServiceProvider(Request $request)
     {
 
@@ -30,6 +30,7 @@ class RegisterController extends Controller implements RegisterInterface
             'job_id' => 'required',
             'number' => 'required|min:11|max:11|unique:identities',
             'image' => 'required|image|mimes:png,jpg,jpeg',
+            'device_token' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
@@ -37,7 +38,7 @@ class RegisterController extends Controller implements RegisterInterface
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
 
-       $user= User::create([
+        $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'phone_number' => $request->phone_number,
@@ -45,10 +46,11 @@ class RegisterController extends Controller implements RegisterInterface
             'password' =>  $input['password'],
             'barthday' => $request->barthday,
             'gender' => $request->gender,
+
         ]);
 
-        
-        
+
+
         if ($request->hasFile('image') && ($request->hasFile('image')) != null) {
             $image = $request->file('image');
             $filename = time() . $image->getClientOriginalName();
@@ -57,25 +59,26 @@ class RegisterController extends Controller implements RegisterInterface
                 $image,
                 $filename
             );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ServiceProviderProfile' . '/'. 'IdentityPhoto' . '/' . $filename;
+            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ServiceProviderProfile' . '/' . 'IdentityPhoto' . '/' . $filename;
         } else
             $image = null;
 
 
-    $IdentityPhoto = Identity::create([
-        'number' => $request->number,
-        'image' => $image,
-    ]);
-    
-        ServiceProvider ::create([
-            'user_id' =>$user->latest('id')->first()->id,
+        $IdentityPhoto = Identity::create([
+            'number' => $request->number,
+            'image' => $image,
+            'device_token' => $request->device_token,
+        ]);
+
+        ServiceProvider::create([
+            'user_id' => $user->latest('id')->first()->id,
             'city_id' => $request->city_id,
             'job_id' => $request->job_id,
             'account_status_id' => 4,
             'identity_id' => $IdentityPhoto->latest('id')->first()->id
 
         ]);
-        
+
 
         return response()->json([['message' =>  'You have been successfully register']]);
     }
@@ -92,6 +95,7 @@ class RegisterController extends Controller implements RegisterInterface
             'password' => 'required|string|min:6|confirmed',
             'barthday' => 'required|date|date_format:Y/m/d',
             'gender' => 'required',
+            'device_token' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
@@ -99,7 +103,7 @@ class RegisterController extends Controller implements RegisterInterface
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
 
-       $user= User::create([
+        $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'phone_number' => $request->phone_number,
@@ -109,13 +113,12 @@ class RegisterController extends Controller implements RegisterInterface
             'gender' => $request->gender,
         ]);
 
-        
+
         Client::create([
-            'user_id' =>$user->latest('id')->first()->id,
-        ]);       
+            'user_id' => $user->latest('id')->first()->id,
+            'device_token' => $request->device_token,
+        ]);
 
         return response()->json([['message' =>  'You have been successfully register']]);
     }
-
-
 }

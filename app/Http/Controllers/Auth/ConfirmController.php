@@ -33,6 +33,9 @@ class ConfirmController extends Controller
 
 
         return response()->json([['message' => 'Your application has been successfully' ,
-        'data' =>  $request->email]]);
+        'email' =>  $request->email ,
+        'code' => $random
+        ]]);
+       
     }
 }
