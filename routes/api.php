@@ -12,7 +12,9 @@ use App\Http\Controllers\Profile\AdminProfileController;
 use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
 use App\Http\Controllers\Actors\ServiceProviderController;
+use App\Http\Controllers\Auth\ConfirmController;
 use App\Http\Controllers\FAQ\FaqController;
+use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Post\PostsGalleryController;
 use App\Http\Controllers\SysInfo\CompanyController;
@@ -34,6 +36,9 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     // Register
     Route::post('serviceProvider/register', [RegisterController::class, 'registerServiceProvider']);
     Route::post('client/register', [RegisterController::class, 'registerClient']);
+
+    //confirm
+    Route::post('user/confirm', [ConfirmController::class, 'confirm']);
 
     // Login
     Route::post('admin/login', [LoginController::class, 'loginAdmin']);
@@ -120,6 +125,11 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
 
             Route::get('post/get_all', [PostController::class, 'get_all']);
+
+            Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
+            Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
+            Route::get('initialOrder/get-all', [InitialOrderController::class, 'get_all']);
+
         });
 
 

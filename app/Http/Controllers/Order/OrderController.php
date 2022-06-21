@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Order;
 
-use App\Models\Proposal;
+use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
-class ProposalController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class ProposalController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Proposal  $proposal
+     * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function show(Proposal $proposal)
+    public function show(Order $order)
     {
         //
     }
@@ -52,10 +53,10 @@ class ProposalController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Proposal  $proposal
+     * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function edit(Proposal $proposal)
+    public function edit(Order $order)
     {
         //
     }
@@ -64,10 +65,10 @@ class ProposalController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Proposal  $proposal
+     * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Proposal $proposal)
+    public function update(Request $request, Order $order)
     {
         //
     }
@@ -75,10 +76,10 @@ class ProposalController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Proposal  $proposal
+     * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Proposal $proposal)
+    public function destroy(Order $order)
     {
         //
     }

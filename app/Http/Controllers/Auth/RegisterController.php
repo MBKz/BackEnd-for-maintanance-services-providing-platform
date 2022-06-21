@@ -24,7 +24,7 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'barthday' => 'required',
+            'barthday' => 'required|date|date_format:Y/m/d',
             'gender' => 'required',
             'city_id' => 'required',
             'job_id' => 'required',
@@ -90,7 +90,7 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'barthday' => 'required',
+            'barthday' => 'required|date|date_format:Y/m/d',
             'gender' => 'required',
         ]);
         if ($validator->fails()) {

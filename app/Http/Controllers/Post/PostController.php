@@ -44,10 +44,13 @@ class PostController extends Controller implements PostInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
+        $user_id = auth()->user()->id;
+        $service_provider_id = ServiceProvider::where('user_id',$user_id)->first();
+
         $post = Post::create([
             'text' => $request->text,
             'date' => $request->date,
-            'service_provider_id' => auth()->user()->id,
+            'service_provider_id' => $service_provider_id->id,
         ]);
         return response()->json([
             "success" => true,
