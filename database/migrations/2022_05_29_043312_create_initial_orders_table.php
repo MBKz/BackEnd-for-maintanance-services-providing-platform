@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('initial_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('describtion');
+            $table->string('description');
             $table->string('location');
             $table->double('latitude');
             $table->double('longitude');
