@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Actors;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\Actors\ServiceProviderInterface;
 use App\Models\ServiceProvider;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -111,9 +112,19 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
+        $serviceProvider = ServiceProvider::where('id',$id)->first();
 
+        $user = User::where('id', $serviceProvider->user_id)->first();
 
-        $serviceProvider = ServiceProvider::where('user_id',$id)->first();
+        if ($request->account_status_id == 0) {
+            
+            $serviceProvider->delete();
+            $user->delete();
+
+            return response()->json([
+                "message" => "Service Provider deleted successfully "
+            ], 422);
+        }
 
         if($serviceProvider ==null)
         {
@@ -145,9 +156,8 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-
-
         $serviceProvider = ServiceProvider::where('user_id',Auth::user()->id)->first();
+
 
         if($serviceProvider ==null)
         {
