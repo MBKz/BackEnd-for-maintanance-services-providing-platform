@@ -9,6 +9,7 @@ use App\Models\Identity;
 use App\Models\ServiceProvider;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,7 +25,7 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'barthday' => 'required|date|date_format:Y/m/d',
+            'birthday' => 'required',
             'gender' => 'required',
             'city_id' => 'required',
             'job_id' => 'required',
@@ -44,7 +45,7 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'password' =>  $input['password'],
-            'barthday' => $request->barthday,
+            'birthday' => $request->birthday,
             'gender' => $request->gender,
 
         ]);
@@ -79,8 +80,10 @@ class RegisterController extends Controller implements RegisterInterface
 
         ]);
 
-
-        return response()->json([['message' =>  'You have been successfully register']]);
+    
+        return response([[
+            'message' =>  'You have been successfully register'
+        ]]);
     }
 
 
@@ -93,7 +96,7 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'barthday' => 'required',
+            'birthday' => 'required',
             'gender' => 'required',
             'device_token' => 'required'
         ]);
@@ -109,16 +112,19 @@ class RegisterController extends Controller implements RegisterInterface
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'password' =>  $input['password'],
-            'barthday' => $request->barthday,
+            'birthday' => $request->birthday,
             'gender' => $request->gender,
         ]);
 
 
-        Client::create([
+      $client =  Client::create([
             'user_id' => $user->latest('id')->first()->id,
             'device_token' => $request->device_token,
         ]);
+        
 
-        return response()->json([['message' =>  'You have been successfully register']]);
+            return response([
+                'message' =>  'You have been successfully register'
+            ]);
     }
 }

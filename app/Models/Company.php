@@ -12,6 +12,6 @@ class Company extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'email', 'phone_number', 'describtion', 'policy'
+        'name', 'email', 'phone_number', 'description', 'policy'
     ];
 }

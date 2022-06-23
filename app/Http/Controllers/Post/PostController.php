@@ -37,7 +37,7 @@ class PostController extends Controller implements PostInterface
 
         $validator = Validator::make($input, [
             'text' => 'required',
-            'date' => 'required|date|date_format:Y/m/d',
+            'date' => 'required',
         ]);
 
         if ($validator->fails()) {

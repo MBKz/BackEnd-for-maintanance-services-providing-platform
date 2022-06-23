@@ -36,7 +36,7 @@ class InitialOrderController extends Controller
         $input = $request->all();
 
         $validator = Validator::make($input, [
-            'describtion' => 'required',
+            'description' => 'required',
             'location' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
@@ -53,7 +53,7 @@ class InitialOrderController extends Controller
         $client_id = Client::where('user_id',$user_id)->first();
 
         $initialOrder = InitialOrder::create([
-            'describtion' => $request->describtion,
+            'description' => $request->description,
             'location' => $request->location,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
@@ -79,7 +79,7 @@ class InitialOrderController extends Controller
             ], 422);
         }
 
-        if ($request->describtion != null)$initialOrder['describtion'] = $request->describtion;
+        if ($request->description != null)$initialOrder['description'] = $request->description;
         if ($request->location != null)   $initialOrder['location'] = $request->location;
         if ($request->latitude != null)   $initialOrder['latitude'] = $request->latitude;
         if ($request->longitude != null)  $initialOrder['longitude'] = $request->longitude;

@@ -12,7 +12,7 @@ class InitialOrder extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'describtion', 'location', 'latitude',
+        'description', 'location', 'latitude',
         'longitude', 'job_id', 'state_id', 'city_id',
         'client_id'
     ];

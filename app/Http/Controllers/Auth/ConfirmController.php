@@ -32,10 +32,10 @@ class ConfirmController extends Controller
         Notification::route('mail', $request->email)->notify(new MailNotification($arr));
 
 
-        return response()->json([['message' => 'Your application has been successfully' ,
+        return response()->json(['message' => 'Your application has been successfully' ,
         'email' =>  $request->email ,
         'code' => $random
-        ]]);
+        ]);
        
     }
 }

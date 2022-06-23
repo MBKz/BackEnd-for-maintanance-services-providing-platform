@@ -37,7 +37,7 @@ class CompanyController extends Controller implements SysInfoInterface
             'name' => 'required',
             'email' => 'required|email',
             'phone_number' => 'required',
-            'describtion' => 'required',
+            'description' => 'required',
             'policy' => 'required',
         ]);
 
@@ -49,7 +49,7 @@ class CompanyController extends Controller implements SysInfoInterface
             'name' => $request->name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'describtion' => $request->describtion,
+            'description' => $request->description,
             'policy' => $request->policy,
         ]);
         return response()->json([
@@ -87,11 +87,11 @@ class CompanyController extends Controller implements SysInfoInterface
             ], 422);
         }
 
-        if ($request->name != null)  $job['name'] = $request->name;
-        if ($request->email != null)  $job['email'] = $request->email;
-        if ($request->phone_number != null)  $job['phone_number'] = $request->phone_number;
-        if ($request->describtion != null)  $job['describtion'] = $request->describtion;
-        if ($request->policy != null)  $job['policy'] = $request->policy;
+        if ($request->name != null)  $Company['name'] = $request->name;
+        if ($request->email != null)  $Company['email'] = $request->email;
+        if ($request->phone_number != null)  $Company['phone_number'] = $request->phone_number;
+        if ($request->description != null)  $Company['description'] = $request->description;
+        if ($request->policy != null)  $Company['policy'] = $request->policy;
 
         $Company->update();
 
