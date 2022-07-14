@@ -17,7 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->integer('duraition');
+            $table->integer('duration');
             $table->integer('service_provider_id')->unsigned();
             $table->foreign('service_provider_id')->references('id')->on('service_providers')->onDelete('cascade');
         });
