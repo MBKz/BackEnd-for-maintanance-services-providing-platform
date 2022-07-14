@@ -89,7 +89,7 @@ class CityController extends Controller implements CityInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        if ($request->name != null)  $job['name'] = $request->name;
+        if ($request->name != null)  $city['name'] = $request->name;
 
         $city->update();
 

@@ -13,6 +13,8 @@ use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
 use App\Http\Controllers\Actors\ServiceProviderController;
 use App\Http\Controllers\FAQ\FaqController;
+use App\Http\Controllers\Post\PostController;
+use App\Http\Controllers\Post\PostsGalleryController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +48,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::get('city/get-all', [CityController::class, 'get_all']);
 
     Route::get('company/get-all', [CompanyController::class, 'get_all']);
+
 
     // Auth
     Route::group(['middleware' => 'auth:api'], function () {
@@ -86,8 +89,10 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::get('serviceProvider/un-activite/get-all', [ServiceProviderController::class, 'getProviderUnActive']);
             Route::get('serviceProvider/block/get-all', [ServiceProviderController::class, 'getProviderBlock']);
             Route::get('serviceProvider/get-all', [ServiceProviderController::class, 'getAllServiceProvider']);
-          
-            Route::post('FAQ/add/answer//{id}', [FaqController::class, 'AddAnswer']);      
+
+            Route::get('client/get-all', [ClientController::class, 'get_all']);
+
+            Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
         });
 
         // ServiceProvider Api
@@ -97,6 +102,15 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
 
             Route::post('serviceProvider/swichActivitProvider', [ServiceProviderController::class, 'swichActivitProvider']);
+
+            Route::post('post/add', [PostController::class, 'store']);
+            Route::post('post/update/{id}', [PostController::class, 'update']);
+            Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
+            Route::get('post/profile', [PostController::class, 'show']);
+
+            Route::post('postGallery/add', [PostsGalleryController::class, 'store']);
+            Route::post('postGallery/update/{id}', [PostsGalleryController::class, 'update']);
+            Route::delete('postGallery/delete/{id}', [PostsGalleryController::class, 'destroy']);
         });
 
         // Client Api
@@ -104,11 +118,13 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
             Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
+
+            Route::get('post/get_all', [PostController::class, 'get_all']);
         });
 
 
         // ال API  المشتركين بين أكثر من نوع
-        
+
         // Admin And Provider Api 
         Route::group(['middleware' => 'provider.admin'], function () {
         });
