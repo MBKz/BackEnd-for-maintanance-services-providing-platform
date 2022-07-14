@@ -38,7 +38,7 @@ class JobController extends Controller implements JobInterface
 
         $validator = Validator::make($input, [
             'title' => 'required',
-            'describtion' => 'required',
+            'description' => 'required',
             'icon' => 'required|image|mimes:png,jpg,jpeg',
             'image' => 'required|image|mimes:png,jpg,jpeg',
 
@@ -76,7 +76,7 @@ class JobController extends Controller implements JobInterface
 
         $job = Job::create([
             'title' => $request->title,
-            'describtion' => $request->describtion,
+            'description' => $request->description,
             'icon' => $icon,
             'image' => $image,
         ]);
@@ -154,7 +154,7 @@ class JobController extends Controller implements JobInterface
                 $image = null;
 
         if ($request->title != null)  $job['title'] = $request->title;
-        if ($request->describtion != null)   $job['describtion'] = $request->describtion;
+        if ($request->description != null)   $job['description'] = $request->description;
         if ($request->icon != null)       $job['icon'] = $icon;
         if ($request->image != null)       $job['image'] = $image;
 

@@ -14,6 +14,6 @@ class Job extends Model
     protected $table = 'jobs';
 
     protected $fillable = [
-        'title','describtion','icon','image'
+        'title','description','icon','image'
         ];
 }

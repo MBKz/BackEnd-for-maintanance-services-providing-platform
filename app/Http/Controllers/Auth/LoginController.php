@@ -23,18 +23,16 @@ class LoginController extends Controller implements LoginInterface
             $admin = Admin::where('user_id', $user_id)->first();
             $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
             if ($admin != null && $admin->role_id == 1) {
-                return response([[
+                return response([
                     'message' =>  'You have been successfully SuperAdmin login',
-                    'success' => $token,
-                    'User' => Auth::user()
-                ]]);
+                    'token' => $token,
+                ]);
             }
             else
-            return response([[
+            return response([
                 'message' =>  'You have been successfully Admin login',
-                'success' => $token,
-                'User' =>  Auth::user()
-            ]]);
+                'token' => $token,
+            ]);
         }
             return response()->json(['error' => 'Unauthorised']);
     }
@@ -47,11 +45,10 @@ class LoginController extends Controller implements LoginInterface
             $provider = ServiceProvider::where('user_id', $user_id)->first();
             if ($provider != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
-                return response([[
+                return response([
                     'message' =>  'You have been successfully Service provider login',
-                    'success' => $token,
-                    'User' => Auth::user()
-                ]]);
+                    'token' => $token,
+                ]);
             }
         }
         
@@ -66,11 +63,10 @@ class LoginController extends Controller implements LoginInterface
             $client = Client::where('user_id', $user_id)->first();
             if ($client != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
-                return response([[
+                return response([
                     'message' =>  'You have been successfully Client login',
-                    'success' => $token,
-                    'User' => Auth::user()
-                ]]);
+                    'token' => $token,
+                ]);
             }
         }
 

@@ -7,12 +7,14 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Helper\CityController;
 use App\Http\Controllers\Helper\JobController;
 use App\Http\Controllers\Actors\ClientController;
-use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Profile\AdminProfileController;
 use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
 use App\Http\Controllers\Actors\ServiceProviderController;
+use App\Http\Controllers\Auth\ConfirmController;
 use App\Http\Controllers\FAQ\FaqController;
+use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Post\PostsGalleryController;
 use App\Http\Controllers\SysInfo\CompanyController;
@@ -35,6 +37,9 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('serviceProvider/register', [RegisterController::class, 'registerServiceProvider']);
     Route::post('client/register', [RegisterController::class, 'registerClient']);
 
+    //confirm
+    Route::post('user/confirm', [ConfirmController::class, 'confirm']);
+
     // Login
     Route::post('admin/login', [LoginController::class, 'loginAdmin']);
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
@@ -53,7 +58,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     // Auth
     Route::group(['middleware' => 'auth:api'], function () {
 
-        Route::get('user/logout', [LogoutController::class, 'logout']);
+        Route::post('user/logout', [LogoutController::class, 'logout']);
 
         Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
 
@@ -120,6 +125,11 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
 
             Route::get('post/get_all', [PostController::class, 'get_all']);
+
+            Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
+            Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
+            Route::get('initialOrder/get-all', [InitialOrderController::class, 'get_all']);
+
         });
 
 
