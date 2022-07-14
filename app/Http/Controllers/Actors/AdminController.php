@@ -71,6 +71,7 @@ class AdminController extends Controller implements AdminInterface
     public function destroy($id)
     {
         $admin = Admin::where('id', $id)->first();
+        $user = User::where('id', $admin->user_id)->first();
 
         if ($admin == null) {
             return response()->json([
@@ -78,7 +79,8 @@ class AdminController extends Controller implements AdminInterface
             ], 422);
         }
         $admin->delete();
-
+        $user->delete();
+        
         return response()->json([
             "success" => true,
             "message" => "Admin deleted successfully ",

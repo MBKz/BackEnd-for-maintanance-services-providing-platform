@@ -18,7 +18,7 @@ class ClientProfileController extends Controller implements ProfileInterface
         $user_id = Auth::user()->id;
         $client = Client::where('user_id', $user_id)->with('user')->first();
         
-        return response()->json([['message' =>  'Your Profile','data' => $client]]);  
+        return response()->json(['message' =>  'Your Profile','data' => $client]);  
     }
     
     public function editProfile(Request $request)
@@ -62,6 +62,6 @@ class ClientProfileController extends Controller implements ProfileInterface
 
         $client->update();
 
-        return response()->json([['message' =>  'You Update Your Profile']]);
+        return response()->json(['message' =>  'You Update Your Profile']);
     }
 }

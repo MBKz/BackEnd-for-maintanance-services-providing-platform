@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('text');
-            $table->dateTime('date');
+            $table->date('date');
             $table->integer('service_provider_id')->unsigned();
             $table->foreign('service_provider_id')->references('id')->on('service_providers')->onDelete('cascade');
 
