@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Order\Proposal;
 
-use App\Models\InitialOrder;
+use App\Http\Controllers\Controller;
+use App\Models\Proposal;
 use Illuminate\Http\Request;
 
-class InitialOrderController extends Controller
+class ProposalController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class InitialOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\InitialOrder  $initialOrder
+     * @param  \App\Models\Proposal  $proposal
      * @return \Illuminate\Http\Response
      */
-    public function show(InitialOrder $initialOrder)
+    public function show(Proposal $proposal)
     {
         //
     }
@@ -52,10 +53,10 @@ class InitialOrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\InitialOrder  $initialOrder
+     * @param  \App\Models\Proposal  $proposal
      * @return \Illuminate\Http\Response
      */
-    public function edit(InitialOrder $initialOrder)
+    public function edit(Proposal $proposal)
     {
         //
     }
@@ -64,10 +65,10 @@ class InitialOrderController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\InitialOrder  $initialOrder
+     * @param  \App\Models\Proposal  $proposal
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, InitialOrder $initialOrder)
+    public function update(Request $request, Proposal $proposal)
     {
         //
     }
@@ -75,10 +76,10 @@ class InitialOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\InitialOrder  $initialOrder
+     * @param  \App\Models\Proposal  $proposal
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InitialOrder $initialOrder)
+    public function destroy(Proposal $proposal)
     {
         //
     }

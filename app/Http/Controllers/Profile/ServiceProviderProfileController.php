@@ -17,7 +17,7 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
         $user_id = Auth::user()->id;
         $provider = ServiceProvider::where('user_id', $user_id)->with('user','job','account_status','city')->first();
         
-        return response()->json([['message' =>  'Your Profile', 'data' => $provider]]);
+        return response()->json(['message' =>  'Your Profile', 'data' => $provider]);
     }
 
     public function editProfile(Request $request)
@@ -60,6 +60,6 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
         if ($request->account_status_id != null)  $serviceProvider['account_status_id'] = $request->account_status_id;
         $serviceProvider->update();
 
-        return response()->json([['message' =>  'You Update Your Profile']]);
+        return response()->json(['message' =>  'You Update Your Profile']);
     }
 }
