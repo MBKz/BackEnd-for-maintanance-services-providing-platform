@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-class PostController extends Controller implements PostInterface
+class PostController extends Controller implements postInterface
 {
     public function get_all()
     {
@@ -47,51 +47,45 @@ class PostController extends Controller implements PostInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-
-       
-        $images = $request->image;
-
-        $echImages[count($images)] = null;
-        
-
-        for ($i = 0; $i < count($images); $i++) {
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $filename = time() . $image[$i]->getClientOriginalName();
-                Storage::disk('public')->putFileAs(
-                    'ServiceProvider/Posts',
-                    $image[$i],
-                    $filename
-                );
-                $image[$i] = $request->image = url('/') . '/storage/' . 'ServiceProvider' . '/' . 'Posts' . '/' . $filename;
-                $echImages[$i] = $image[$i];
-            } else {
-                $image[$i] = null;
-        $echImages[$i] == null;
-            }
-        }
-
         $user_id = auth()->user()->id;
         $service_provider_id = ServiceProvider::where('user_id', $user_id)->first();
-
         $post = Post::create([
             'text' => $request->text,
             'date' => $request->date,
             'service_provider_id' => $service_provider_id->id,
         ]);
 
-        
+        $images = $request->image;
+        if($request->image !=null){
 
+            $echImages[count($images)] = null;
 
-        for ($i = 0; $i < count($image); $i++) {
+            for ($i = 0; $i < count($images); $i++) {
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $filename = time() . $image[$i]->getClientOriginalName();
+                    Storage::disk('public')->putFileAs(
+                        'ServiceProvider/Posts',
+                        $image[$i],
+                        $filename
+                    );
+                    $image[$i] = $request->image = url('/') . '/storage/' . 'ServiceProvider' . '/' . 'Posts' . '/' . $filename;
+                    $echImages[$i] = $image[$i];
+                } else {
+                    $image[$i] = null;
 
-            PostsGallery::create([
-                'title' => $request->title,
-                'image' => $echImages[$i],
-                'post_id' => $post->latest('id')->first()->id,
-            ]);
+                }
+            }
+
+            for ($i = 0; $i < count($image); $i++) {
+
+                PostsGallery::create([
+                    'title' => $request->title,
+                    'image' => $echImages[$i],
+                    'post_id' => $post->latest('id')->first()->id,
+                ]);
+            }
         }
-
 
         return response()->json([
             "success" => true,
@@ -125,37 +119,6 @@ class PostController extends Controller implements PostInterface
         ]);
     }
 
-
-    public function update(Request $request, $id)
-    {
-        $post = Post::find($id);
-
-        if ($post == null) {
-            return response()->json([
-                "message" => "Not Found Post"
-            ], 422);
-        }
-
-        $validator = Validator::make($request->all, [
-            'date' => 'date',
-        ]);
-
-        if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
-        }
-
-        if ($request->text != null)  $post['text'] = $request->text;
-        if ($request->date != null)  $post['date'] = $request->date;
-
-
-        $post->update();
-
-        return response()->json([
-            "success" => true,
-            "message" => "Post updated successfully.",
-            "data" => $post
-        ]);
-    }
 
 
     public function destroy($id)
