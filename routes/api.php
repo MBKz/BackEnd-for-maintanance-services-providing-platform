@@ -135,7 +135,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
         // ال API  المشتركين بين أكثر من نوع
 
-        // Admin And Provider Api 
+        // Admin And Provider Api
         Route::group(['middleware' => 'provider.admin'], function () {
         });
 
@@ -150,3 +150,5 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
         });
     });
 });
+
+// fresh start on 14/7
