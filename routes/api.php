@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Helper\CityController;
 use App\Http\Controllers\Helper\JobController;
 use App\Http\Controllers\Actors\ClientController;
-use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Profile\AdminProfileController;
 use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
@@ -58,7 +58,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     // Auth
     Route::group(['middleware' => 'auth:api'], function () {
 
-        Route::get('user/logout', [LogoutController::class, 'logout']);
+        Route::post('user/logout', [LogoutController::class, 'logout']);
 
         Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
 

@@ -18,7 +18,7 @@ class AdminProfileController extends Controller implements ProfileInterface
         $user_id = Auth::user()->id;
         $admin = Admin::where('user_id', $user_id)->with('user','role')->first();
 
-        return response()->json([['message' =>  'Your Profile','data' => $admin]]);   
+        return response()->json(['message' =>  'Your Profile','data' => $admin]);   
     }
 
     public function editProfile(Request $request)
@@ -53,7 +53,7 @@ class AdminProfileController extends Controller implements ProfileInterface
 
         $user->update();
 
-        return response()->json([['message' =>  'You Update Your Profile']]);
+        return response()->json(['message' =>  'You Update Your Profile']);
     }
 
 

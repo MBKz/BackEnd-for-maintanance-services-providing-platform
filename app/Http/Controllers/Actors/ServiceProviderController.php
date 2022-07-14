@@ -128,7 +128,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
         if($serviceProvider ==null)
         {
-            return response()->json([['error' =>  'Not Found Service Provider']]);
+            return response()->json(['error' =>  'Not Found Service Provider'],422);
         }
 
         $serviceProvider['account_status_id'] = $request->account_status_id;
@@ -161,7 +161,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
         if($serviceProvider ==null)
         {
-            return response()->json([['error' =>  'Not Found Service Provider']]);
+            return response()->json(['error' =>  'Not Found Service Provider'],422);
         }
 
         $serviceProvider['account_status_id'] = $request->account_status_id;
@@ -169,10 +169,10 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $serviceProvider->update();
 
 
-        return response()->json([[
+        return response()->json([
             'message' =>  'The service provider has become ' .$serviceProvider->account_status->title,
             'data' =>$serviceProvider
-            ]]);
+            ]);
 
 
     }

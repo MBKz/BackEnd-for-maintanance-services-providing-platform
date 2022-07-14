@@ -9,7 +9,6 @@ use App\Models\Identity;
 use App\Models\ServiceProvider;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -81,9 +80,9 @@ class RegisterController extends Controller implements RegisterInterface
         ]);
 
     
-        return response([[
+        return response([
             'message' =>  'You have been successfully register'
-        ]]);
+        ]);
     }
 
 
