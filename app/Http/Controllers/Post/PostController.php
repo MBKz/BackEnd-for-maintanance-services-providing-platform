@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-class PostController extends Controller implements postInterface
+class PostController extends Controller implements PostInterface
 {
     public function get_all()
     {
@@ -47,45 +47,53 @@ class PostController extends Controller implements postInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
+
         $user_id = auth()->user()->id;
         $service_provider_id = ServiceProvider::where('user_id', $user_id)->first();
+
         $post = Post::create([
             'text' => $request->text,
             'date' => $request->date,
             'service_provider_id' => $service_provider_id->id,
         ]);
 
+
         $images = $request->image;
         if($request->image !=null){
+        $echImages[count($images)] = null;
+        
 
-            $echImages[count($images)] = null;
-
-            for ($i = 0; $i < count($images); $i++) {
-                if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-                    $filename = time() . $image[$i]->getClientOriginalName();
-                    Storage::disk('public')->putFileAs(
-                        'ServiceProvider/Posts',
-                        $image[$i],
-                        $filename
-                    );
-                    $image[$i] = $request->image = url('/') . '/storage/' . 'ServiceProvider' . '/' . 'Posts' . '/' . $filename;
-                    $echImages[$i] = $image[$i];
-                } else {
-                    $image[$i] = null;
-
-                }
-            }
-
-            for ($i = 0; $i < count($image); $i++) {
-
-                PostsGallery::create([
-                    'title' => $request->title,
-                    'image' => $echImages[$i],
-                    'post_id' => $post->latest('id')->first()->id,
-                ]);
+        for ($i = 0; $i < count($images); $i++) {
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time() . $image[$i]->getClientOriginalName();
+                Storage::disk('public')->putFileAs(
+                    'ServiceProvider/Posts',
+                    $image[$i],
+                    $filename
+                );
+                $image[$i] = $request->image = url('/') . '/storage/' . 'ServiceProvider' . '/' . 'Posts' . '/' . $filename;
+                $echImages[$i] = $image[$i];
+            } else {
+                $image[$i] = null;
+      
             }
         }
+    
+
+
+        
+
+        for ($i = 0; $i < count($image); $i++) {
+            
+            PostsGallery::create([
+                'title' => $request->title,
+                'image' => $echImages[$i],
+                'post_id' => $post->latest('id')->first()->id,
+            ]);
+        }
+    }
+
 
         return response()->json([
             "success" => true,

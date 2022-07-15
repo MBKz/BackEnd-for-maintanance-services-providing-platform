@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\UploadImage;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 function upload(Request $request, $image) {
 

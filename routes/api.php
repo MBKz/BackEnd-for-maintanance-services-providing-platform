@@ -53,7 +53,8 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::get('city/get-all', [CityController::class, 'get_all']);
 
     Route::get('company/get-all', [CompanyController::class, 'get_all']);
-
+    
+    Route::get('FAQ/get-all', [FaqController::class, 'get_all']);
 
     // Auth
     Route::group(['middleware' => 'auth:api'], function () {
@@ -61,8 +62,6 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
         Route::post('user/logout', [LogoutController::class, 'logout']);
 
         Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
-
-        Route::get('FAQ/get-all', [FaqController::class, 'get_all']);
 
         // Admin Api
         Route::group(['middleware' => 'admin'], function () {
@@ -135,7 +134,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
         // ال API  المشتركين بين أكثر من نوع
 
-        // Admin And Provider Api
+        // Admin And Provider Api 
         Route::group(['middleware' => 'provider.admin'], function () {
         });
 
@@ -150,5 +149,3 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
         });
     });
 });
-
-// fresh start on 14/7
