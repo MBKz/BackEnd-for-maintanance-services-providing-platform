@@ -34,7 +34,7 @@ class LoginController extends Controller implements LoginInterface
                 'token' => $token,
             ]);
         }
-            return response()->json(['error' => 'Unauthorised']);
+            return response()->json(['error' => 'Unauthorised'], 422);
     }
 
 
@@ -52,7 +52,7 @@ class LoginController extends Controller implements LoginInterface
             }
         }
         
-            return response()->json(['error' => 'You Are Not Service Provider']);
+            return response()->json(['error' => 'You Are Not Service Provider'], 422);
         
     }
 
@@ -70,7 +70,7 @@ class LoginController extends Controller implements LoginInterface
             }
         }
 
-        return response()->json(['error' => 'You Are Not Client']);
+        return response()->json(['error' => 'You Are Not Client'], 422);
     }
 
     

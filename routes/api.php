@@ -44,7 +44,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('admin/login', [LoginController::class, 'loginAdmin']);
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
     Route::post('client/login', [LoginController::class, 'loginClient']);
-
+    Route::post('admin/add', [AdminController::class, 'createAdmin']);
     // Visitor
     Route::get('job/get/{id}', [JobController::class, 'show']);
     Route::get('job/get-all', [JobController::class, 'get_all']);
@@ -69,7 +69,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
 
-            Route::post('admin/add', [AdminController::class, 'createAdmin']);
+
             Route::get('admin/get-all', [AdminController::class, 'getAdmins']);
             Route::delete('admin/delete/{id}', [AdminController::class, 'destroy']);
 

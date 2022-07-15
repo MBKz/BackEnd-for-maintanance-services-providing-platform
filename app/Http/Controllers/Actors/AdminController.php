@@ -39,7 +39,7 @@ class AdminController extends Controller implements AdminInterface
             'last_name' => 'required',
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
-            'age' => 'required',
+            'birthday' => 'required',
             'gender' => 'required',
         ]);
         if ($validator->fails()) {
@@ -53,7 +53,7 @@ class AdminController extends Controller implements AdminInterface
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'password' =>'$2y$10$D6qxVnoAHMJ./aWONwsQvug8w6dwfmjaaTJdTyGOQkBWP2yR9Jw3W',
-            'age' => $request->age,
+            'birthday' => $request->birthday,
             'gender' => $request->gender,
         ]);
 

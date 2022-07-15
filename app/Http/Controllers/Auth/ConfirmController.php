@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Notifications\MailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -19,6 +20,8 @@ class ConfirmController extends Controller
             return response()->json(['error' => $validator->errors()], 401);
         }
 
+        $user = User::where('email', $request->email)->first();
+        if($user == null){
         $random = rand(100000, 999999);
         $arr = [
             'title'    => 'Hi',
@@ -32,10 +35,11 @@ class ConfirmController extends Controller
         Notification::route('mail', $request->email)->notify(new MailNotification($arr));
 
 
-        return response()->json(['message' => 'Your application has been successfully' ,
+        return response()->json(['message' => 'تم إرسال رمز التفعيل إلى حسابك' ,
         'email' =>  $request->email ,
         'code' => $random
         ]);
-       
+    }
+    return response()->json(['error' => 'عذرا حسابك مفعل مسبقا'],422);
     }
 }
