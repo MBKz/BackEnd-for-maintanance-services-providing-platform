@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['cors']], function () {
+Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
     // Register
     //TODO: make function for uploading

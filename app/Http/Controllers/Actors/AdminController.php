@@ -54,7 +54,7 @@ class AdminController extends Controller implements AdminInterface
         ]);
 
         $user()->admin()->create(['role_id' => 2]);
-        return response()->json([['message' =>  'تمت الإضافة بنجاح']]);
+        return response()->json([['message' =>  'تمت الإضافة بنجاح' ,'data' => $user->load('admin')]]);
     }
 
     public function destroy($id)
