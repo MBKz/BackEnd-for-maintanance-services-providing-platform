@@ -23,6 +23,7 @@ class JobController extends Controller implements JobInterface
                 "message" => "Not Found Job"
             ], 422);
         }
+    
 
         return response()->json([
             "success" => true,

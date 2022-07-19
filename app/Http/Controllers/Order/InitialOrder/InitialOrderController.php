@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Order\InitialOrder;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\InitialOrder;
+use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class InitialOrderController extends Controller
@@ -20,13 +22,13 @@ class InitialOrderController extends Controller
 
         if ($initialOrders == null) {
             return response()->json([
-                "message" => "Not Found Initial Orders"
+                "error" => "Not Found Initial Orders"
             ], 422);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Initial Orders List",
+            "message" => "جميع الطلبات الخاصة بك",
             "data" => $initialOrders
         ]);
     }
@@ -41,7 +43,6 @@ class InitialOrderController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'job_id' => 'required',
-            'state_id' => 'required',
             'city_id' => 'required',
         ]);
 
@@ -58,13 +59,13 @@ class InitialOrderController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'job_id' => $request->job_id,
-            'state_id' => $request->state_id,
+            'state_id' => 1,
             'city_id' => $request->city_id,
             'client_id' => $client_id->id,
         ]);
         return response()->json([
             "success" => true,
-            "message" => "Initial Order created successfully.",
+            "message" => "تم الطلب بنجاح",
             "data" => $initialOrder
         ]);
     }
@@ -75,7 +76,7 @@ class InitialOrderController extends Controller
 
         if ($initialOrder == null) {
             return response()->json([
-                "message" => "Not Found Initial Order"
+                "error" => "هذا الطلب غير موجود"
             ], 422);
         }
 
@@ -84,15 +85,41 @@ class InitialOrderController extends Controller
         if ($request->latitude != null)   $initialOrder['latitude'] = $request->latitude;
         if ($request->longitude != null)  $initialOrder['longitude'] = $request->longitude;
         if ($request->job_id != null)     $initialOrder['job_id'] = $request->job_id;
-        if ($request->state_id != null)   $initialOrder['state_id'] = $request->state_id;
         if ($request->city_id != null)    $initialOrder['city_id'] = $request->city_id;
 
         $initialOrder->update();
 
         return response()->json([
             "success" => true,
-            "message" => "Initial Order updated successfully.",
+            "message" => "تم تعديل هذا الطلب بنجاح",
             "data" => $initialOrder
+        ]);
+    }
+
+    public function destroy($id)
+    {
+
+        $user_id = Auth::id();
+        $client = Client::where('user_id', $user_id)
+            ->first();
+
+        $client_id = $client->id;
+        $initalOrder = InitialOrder::where('id', $id)
+            ->where('client_id', $client_id)
+            ->first();
+            
+
+        if ($initalOrder == null) {
+            return response()->json([
+                "error" => "هذا الطلب غير موجود"
+            ], 422);
+        }
+        $initalOrder->delete();
+
+        return response()->json([
+            "success" => true,
+            "message" => "تم حذف هذا الطلب بنجاح",
+            "data" => $initalOrder
         ]);
     }
 }

@@ -112,9 +112,6 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
             Route::get('post/profile', [PostController::class, 'show']);
 
-            Route::post('postGallery/add', [PostsGalleryController::class, 'store']);
-            Route::post('postGallery/update/{id}', [PostsGalleryController::class, 'update']);
-            Route::delete('postGallery/delete/{id}', [PostsGalleryController::class, 'destroy']);
         });
 
         // Client Api
@@ -128,6 +125,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
             Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
             Route::get('initialOrder/get-all', [InitialOrderController::class, 'get_all']);
+            Route::delete('initialOrder/delete/{id}', [InitialOrderController::class, 'destroy']);
 
         });
 

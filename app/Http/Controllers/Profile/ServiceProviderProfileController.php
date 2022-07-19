@@ -46,7 +46,7 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
             $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ServiceProviderProfile' . '/' . $filename;
         }
 
-        if ($request->password != null)    $user['password'] = bcrypt($user['password']);
+        if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
         if ($request->image != null)       $user['image'] = $image;
 
