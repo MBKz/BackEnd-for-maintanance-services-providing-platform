@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\Helper\AccountStatusInterface;
 use App\Models\AccountStatus;
-use Illuminate\Http\Request;
 
 class AccountStatusController extends Controller implements AccountStatusInterface
 {
-   
+
     public function get_all()
     {
         $accountStatus  = AccountStatus::get();

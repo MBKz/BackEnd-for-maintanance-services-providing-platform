@@ -20,17 +20,15 @@ class ConfirmController extends Controller
             return response()->json(['error' => $validator->errors()], 401);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::firstWhere('email', $request->email);
         if($user == null){
         $random = rand(100000, 999999);
         $arr = [
-            'title'    => 'Hi',
-            'body'     => 'Please fill out this code in until khalea-alena Confirm your account app',
-            'button'   => 'Confirm your account',
-            'code'     =>  "this is your code : " . $random,
-            'lastLine' => 'Thanks'
+            'title'    => 'أهلا بكم في عائلة خليها علينا',
+            'body'     => 'الرجاء إدخال رمز التحقق في المكان المخصص له في التطبيق',
+            'code'     =>  $random,
+            'lastLine' => 'وشكرا'
         ];
-
 
         Notification::route('mail', $request->email)->notify(new MailNotification($arr));
 
@@ -40,6 +38,6 @@ class ConfirmController extends Controller
         'code' => $random
         ]);
     }
-    return response()->json(['error' => 'عذرا حسابك مفعل مسبقا'],422);
+    return response()->json(['error' => 'عذرا حسابك مفعل مسبقا'],400);
     }
 }

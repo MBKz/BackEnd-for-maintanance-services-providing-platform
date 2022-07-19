@@ -29,28 +29,14 @@ class RegisterController extends Controller implements RegisterInterface
             'city_id' => 'required',
             'job_id' => 'required',
             'number' => 'required|min:11|max:11|unique:identities',
-            'image' => 'required|image|mimes:png,jpg,jpeg',
-            'device_token' => 'required'
+            'image' => 'required|image|mimes:png,jpg,jpeg'
         ]);
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
         }
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'password' =>  $input['password'],
-            'birthday' => $request->birthday,
-            'gender' => $request->gender,
-
-        ]);
-
-
-
+        //TODO: make function for uploading
         if ($request->hasFile('image') && ($request->hasFile('image')) != null) {
             $image = $request->file('image');
             $filename = time() . $image->getClientOriginalName();
@@ -63,25 +49,31 @@ class RegisterController extends Controller implements RegisterInterface
         } else
             $image = null;
 
-
-        $IdentityPhoto = Identity::create([
+        $identity = Identity::create([
             'number' => $request->number,
-            'image' => $image,
-            'device_token' => $request->device_token,
+            'image' => $image
         ]);
 
-        ServiceProvider::create([
-            'user_id' => $user->latest('id')->first()->id,
+        $request['password'] = bcrypt($request['password']);
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'password' =>  $request['password'],
+            'birthday' => $request->birthday,
+            'gender' => $request->gender,
+        ]);
+
+        $user->serviceProvider()->create([
             'city_id' => $request->city_id,
             'job_id' => $request->job_id,
             'account_status_id' => 4,
-            'identity_id' => $IdentityPhoto->latest('id')->first()->id
-
+            'identity_id' => $identity->id
         ]);
 
-    
         return response([
-            'message' =>  'You have been successfully register'
+            'message' =>  'تمت عملية تسجيل الحساب بنجاح .'
         ]);
     }
 
@@ -96,34 +88,30 @@ class RegisterController extends Controller implements RegisterInterface
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'birthday' => 'required',
-            'gender' => 'required',
-            'device_token' => 'required'
+            'gender' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
         }
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
+
+        $request['password'] = bcrypt($request['password']);
 
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
-            'password' =>  $input['password'],
+            'password' =>  $request['password'],
             'birthday' => $request->birthday,
             'gender' => $request->gender,
         ]);
 
 
-      $client =  Client::create([
-            'user_id' => $user->latest('id')->first()->id,
-            'device_token' => $request->device_token,
-        ]);
-        
+        $user->client()->create();
+
 
             return response([
-                'message' =>  'You have been successfully register'
+                'message' =>  'تمت عملية تسجيل الحساب بنجاح .'
             ]);
     }
 }

@@ -5,20 +5,14 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\Auth\LogoutInterface;
 use Illuminate\Http\Request;
-
+use PHPUnit\Exception;
 
 
 class LogoutController extends Controller implements LogoutInterface
 {
     public function logout(Request $request)
      {
-
-        $user = $request->user()->token();
-        $user->revoke();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout successfully'
-        ]);
-    }
+         $request->user()->token()->revoke();
+         return response()->json(['message' => 'تمت عملية تسجيل الخروج بنجاح']);
+     }
 }

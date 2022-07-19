@@ -22,19 +22,14 @@ class LoginController extends Controller implements LoginInterface
             $user_id = Auth::user()->id;
             $admin = Admin::where('user_id', $user_id)->first();
             $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
-            if ($admin != null && $admin->role_id == 1) {
+            if ($admin != null ) {
                 return response([
-                    'message' =>  'You have been successfully SuperAdmin login',
+                    'message' =>  'مرحبا بكم من جديد',
                     'token' => $token,
                 ]);
             }
-            else
-            return response([
-                'message' =>  'You have been successfully Admin login',
-                'token' => $token,
-            ]);
         }
-            return response()->json(['error' => 'Unauthorised'], 422);
+            return response()->json(['error' => 'الحساب غير متاح'], 404);
     }
 
 
@@ -46,32 +41,32 @@ class LoginController extends Controller implements LoginInterface
             if ($provider != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
                 return response([
-                    'message' =>  'You have been successfully Service provider login',
+                    'message' =>  'مرحبا بكم من جديد',
                     'token' => $token,
                 ]);
             }
         }
-        
-            return response()->json(['error' => 'You Are Not Service Provider'], 422);
-        
+
+        return response()->json(['error' => 'عذرا الرجاء الاشتراك بالنظام أولا'], 400);
+
     }
 
     public function loginClient()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
-            $client = Client::where('user_id', $user_id)->first();
+            $client = Client::firstWhere('user_id', $user_id);
             if ($client != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
                 return response([
-                    'message' =>  'You have been successfully Client login',
+                    'message' =>  'مرحبا بكم من جديد',
                     'token' => $token,
                 ]);
             }
         }
 
-        return response()->json(['error' => 'You Are Not Client'], 422);
+        return response()->json(['error' => 'عذرا الرجاء الاشتراك بالنظام أولا'], 400);
     }
 
-    
+
 }

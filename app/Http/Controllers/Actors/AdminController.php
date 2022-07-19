@@ -13,21 +13,18 @@ use Illuminate\Support\Facades\Validator;
 class AdminController extends Controller implements AdminInterface
 {
 
-
-
-    public function getAdmins() 
+    public function getAdmins()
     {
         $admin  = Admin::with('user','role')->get();
 
         if ($admin == null) {
             return response()->json([
-                "message" => "Not Found Admin"
-            ], 422);
+                "error" => "لايوجد أي موظف"
+            ], 404);
         }
 
         return response()->json([
-            "success" => true,
-            "message" => "Admins List",
+            "message" => "قائمة الموظفين",
             "data" => $admin
         ]);
     }
@@ -43,9 +40,8 @@ class AdminController extends Controller implements AdminInterface
             'gender' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(['error' => $validator->errors()], 400);
         }
-       
 
        $user= User::create([
             'first_name' => $request->first_name,
@@ -57,16 +53,9 @@ class AdminController extends Controller implements AdminInterface
             'gender' => $request->gender,
         ]);
 
-        
-        Admin::create([
-            'user_id' =>$user->latest('id')->first()->id,
-            'role_id' => 2,
-        ]);
-       
-
-        return response()->json([['message' =>  'Successfully added']]);
+        $user()->admin()->create(['role_id' => 2]);
+        return response()->json([['message' =>  'تمت الإضافة بنجاح']]);
     }
-
 
     public function destroy($id)
     {
@@ -75,19 +64,15 @@ class AdminController extends Controller implements AdminInterface
 
         if ($admin == null) {
             return response()->json([
-                "message" => "Not Found Admin"
-            ], 422);
+                "error" => "عذرا غير موجود"
+            ], 404);
         }
         $admin->delete();
         $user->delete();
-        
+
         return response()->json([
-            "success" => true,
-            "message" => "Admin deleted successfully ",
+            "message" => "تمت عملية الحذف بنجاح",
             "data" => $admin
         ]);
     }
-
-
-
 }
