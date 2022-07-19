@@ -18,13 +18,11 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-
         $user_id = Auth::user()->id;
         $admin = ModelsAdmin::where('user_id', $user_id)->first();
-        if ($admin == null) {
-            return response()->json(['errors'=>'You do not have access here'], 422);
-     }
-
-        return $next($request);
+        if($admin != null && $admin->role_id == 2){
+            return $next($request);
+        }
+        return response(['errors'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 400);
     }
 }

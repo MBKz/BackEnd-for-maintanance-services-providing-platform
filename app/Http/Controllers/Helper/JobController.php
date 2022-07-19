@@ -13,25 +13,16 @@ use Illuminate\Support\Facades\Validator;
 class JobController extends Controller implements JobInterface
 {
 
-  
+  // TODO: upload func
+
     public function get_all()
     {
         $jobs  = Job::get();
-
-        if ($jobs == null) {
-            return response()->json([
-                "message" => "Not Found Job"
-            ], 422);
-        }
-    
-
         return response()->json([
-            "success" => true,
-            "message" => "Jobs List",
+            "message" => "قائمة الخدمات",
             "data" => $jobs
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -50,6 +41,7 @@ class JobController extends Controller implements JobInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
+        // TODO: upload func
         if ($request->hasFile('icon') && ($request->hasFile('icon')) != null) {
             $icon = $request->file('icon');
             $filename = time() . $icon->getClientOriginalName();
@@ -82,8 +74,7 @@ class JobController extends Controller implements JobInterface
             'image' => $image,
         ]);
         return response()->json([
-            "success" => true,
-            "message" => "Job created successfully.",
+            "message" => "تمت إضافة خدمة جديدة",
             "data" => $job
         ]);
     }
@@ -99,16 +90,9 @@ class JobController extends Controller implements JobInterface
         $job = Job::find($id);
 
         if ($job == null) {
-            return response()->json([
-                "message" => "Not Found job"
-            ], 422);
+            return response(["error" => "عذرا غير موجود"], 404);
         }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Job retrieved successfully.",
-            "data" => $job
-        ]);
+        return response(["message" => "معلومات الخدمة", "data" => $job]);
     }
 
 
@@ -117,18 +101,16 @@ class JobController extends Controller implements JobInterface
 
         $job = Job::find($id);
 
-        
-
         $validator = Validator::make($request->all(), [
             'icon' => 'image|mimes:png,jpg,jpeg',
             'image' => 'image|mimes:png,jpg,jpeg',
-
-
         ]);
 
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
+
+        // TODO: upload func
 
         if ($request->hasFile('icon') && ($request->hasFile('icon')) != null) {
             $icon = $request->file('icon');
@@ -163,28 +145,25 @@ class JobController extends Controller implements JobInterface
         $job->update();
 
         return response()->json([
-            "success" => true,
-            "message" => "Job updated successfully.",
+            "message" => "تمت عملية التعديل بنجاح",
             "data" => $job
         ]);
     }
 
-   
+
 
     public function destroy($id)
     {
-        $job = Job::where('id', $id)->first();
+        $job = Job::firstWhere('id', $id);
 
         if ($job == null) {
             return response()->json([
-                "message" => "Not Found Job"
-            ], 422);
+                "error" => "عذرا"
+            ], 404);
         }
         $job->delete();
-
         return response()->json([
-            "success" => true,
-            "message" => "Job deleted successfully ",
+            "message" => "تمت عملية الحذف بنجاح",
             "data" => $job
         ]);
     }

@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AccountStatusController;
 use App\Http\Controllers\Actors\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Helper\AccountStatusController;
 use App\Http\Controllers\Helper\CityController;
 use App\Http\Controllers\Helper\JobController;
 use App\Http\Controllers\Actors\ClientController;
@@ -16,7 +16,6 @@ use App\Http\Controllers\Auth\ConfirmController;
 use App\Http\Controllers\FAQ\FaqController;
 use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
 use App\Http\Controllers\Post\PostController;
-use App\Http\Controllers\Post\PostsGalleryController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,9 +30,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['cors', 'json.response']], function () {
+Route::group(['middleware' => ['cors']], function () {
 
     // Register
+    //TODO: make function for uploading
     Route::post('serviceProvider/register', [RegisterController::class, 'registerServiceProvider']);
     Route::post('client/register', [RegisterController::class, 'registerClient']);
 
@@ -45,7 +45,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
     Route::post('client/login', [LoginController::class, 'loginClient']);
 
-    // Visitor
+    // Available for Visitors
     Route::get('job/get/{id}', [JobController::class, 'show']);
     Route::get('job/get-all', [JobController::class, 'get_all']);
 
@@ -53,25 +53,30 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::get('city/get-all', [CityController::class, 'get_all']);
 
     Route::get('company/get-all', [CompanyController::class, 'get_all']);
-    
+
     Route::get('FAQ/get-all', [FaqController::class, 'get_all']);
 
-    // Auth
+    // Needs Auth
     Route::group(['middleware' => 'auth:api'], function () {
 
+        //TODO: re-logout !!
         Route::post('user/logout', [LogoutController::class, 'logout']);
 
+        //TODO: path !!
         Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
+
+        // Super Admin
+        Route::group(['middleware' => 'superAdmin'], function () {
+            Route::post('admin/add', [AdminController::class, 'createAdmin']);
+            Route::get('admin/get-all', [AdminController::class, 'getAdmins']);
+            Route::delete('admin/delete/{id}', [AdminController::class, 'destroy']);
+        });
 
         // Admin Api
         Route::group(['middleware' => 'admin'], function () {
 
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
-
-            Route::post('admin/add', [AdminController::class, 'createAdmin']);
-            Route::get('admin/get-all', [AdminController::class, 'getAdmins']);
-            Route::delete('admin/delete/{id}', [AdminController::class, 'destroy']);
 
             Route::post('job/add', [JobController::class, 'store']);
             Route::post('job/update/{id}', [JobController::class, 'update']);
@@ -132,7 +137,7 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
         // ال API  المشتركين بين أكثر من نوع
 
-        // Admin And Provider Api 
+        // Admin And Provider Api
         Route::group(['middleware' => 'provider.admin'], function () {
         });
 

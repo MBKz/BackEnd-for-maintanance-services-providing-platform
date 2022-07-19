@@ -13,21 +13,11 @@ class CompanyController extends Controller implements SysInfoInterface
     public function get_all()
     {
         $Company  = Company::get();
-
-        if ($Company == null) {
-            return response()->json([
-                "message" => "Not Found Company"
-            ], 422);
-        }
-
         return response()->json([
-            "success" => true,
-            "message" => "Company List",
+            "message" => "معلومات الشركة",
             "data" => $Company
         ]);
     }
-
-
 
     public function store(Request $request)
     {
@@ -53,8 +43,7 @@ class CompanyController extends Controller implements SysInfoInterface
             'policy' => $request->policy,
         ]);
         return response()->json([
-            "success" => true,
-            "message" => "Company created successfully.",
+            "message" => "تم إنشاء الشركة بنجاح",
             "data" => $Company
         ]);
     }
@@ -65,17 +54,15 @@ class CompanyController extends Controller implements SysInfoInterface
 
         if ($Company == null) {
             return response()->json([
-                "message" => "Not Found Company"
-            ], 422);
+                "message" => "عذرا"
+            ], 404);
         }
 
         return response()->json([
-            "success" => true,
-            "message" => "Company retrieved successfully.",
+            "message" => "معلومات الشركة",
             "data" => $Company
         ]);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -83,8 +70,8 @@ class CompanyController extends Controller implements SysInfoInterface
 
         if ($Company == null) {
             return response()->json([
-                "message" => "Not Found Company"
-            ], 422);
+                "message" => "عذرا"
+            ], 404);
         }
 
         if ($request->name != null)  $Company['name'] = $request->name;
@@ -96,12 +83,10 @@ class CompanyController extends Controller implements SysInfoInterface
         $Company->update();
 
         return response()->json([
-            "success" => true,
-            "message" => "Company updated successfully.",
+            "message" => "تم التعديل",
             "data" => $Company
         ]);
     }
-
 
     public function destroy($id)
     {
@@ -109,14 +94,13 @@ class CompanyController extends Controller implements SysInfoInterface
 
         if ($Company == null) {
             return response()->json([
-                "message" => "Not Found Company"
+                "message" => "عذرا"
             ], 422);
         }
         $Company->delete();
 
         return response()->json([
-            "success" => true,
-            "message" => "Company deleted successfully ",
+            "message" => "تم حذف الشركة",
             "data" => $Company
         ]);
     }
