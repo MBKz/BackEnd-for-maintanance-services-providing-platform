@@ -17,25 +17,20 @@ class AdminProfileController extends Controller implements ProfileInterface
     {
         $user_id = Auth::user()->id;
         $admin = Admin::where('user_id', $user_id)->with('user','role')->first();
-
-        return response()->json(['message' =>  'Your Profile','data' => $admin]);   
+        return response()->json(['message' =>  'المعلومات الشخصية','data' => $admin]);
     }
-
+    //TODO: upload func
     public function editProfile(Request $request)
     {
 
         $user = Auth::user();
-
-
         $validator = Validator::make($request->all(), [
             'image' => 'image|mimes:jpg,png,jpeg,gif,svg',
+            'password' => 'min:6'
         ]);
-
-
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
-
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = time() . $image->getClientOriginalName();
@@ -47,13 +42,12 @@ class AdminProfileController extends Controller implements ProfileInterface
             $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'AdminProfile' . '/' . $filename;
         }
 
-        if ($request->password != null)    $user['password'] = bcrypt($user['password']);
+        if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
         if ($request->image != null)       $user['image'] = $image;
 
         $user->update();
-
-        return response()->json(['message' =>  'You Update Your Profile']);
+        return response()->json(['message' =>  'تمت عملية التعديل بنجاح']);
     }
 
 

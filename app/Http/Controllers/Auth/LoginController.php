@@ -46,7 +46,6 @@ class LoginController extends Controller implements LoginInterface
                 ]);
             }
         }
-
         return response()->json(['error' => 'عذرا الرجاء الاشتراك بالنظام أولا'], 400);
 
     }

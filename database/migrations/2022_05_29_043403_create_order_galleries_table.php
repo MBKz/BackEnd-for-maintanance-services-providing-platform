@@ -18,9 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('image');
             $table->integer('initial_order_id')->unsigned();
-            $table->integer('job_id')->unsigned();
             $table->foreign('initial_order_id')->references('id')->on('initial_orders')->onDelete('cascade');
-            $table->foreign('job_id')->references('id')->on('jobs')->onDelete('cascade');
         });
     }
 

@@ -10,7 +10,7 @@ use App\Models\Client;
 class ClientController extends Controller implements ClientInterface
 {
 
-    public function getAllClient() 
+    public function get_all()
     {
         $client  = Client::with('user')->get();
 
@@ -21,8 +21,7 @@ class ClientController extends Controller implements ClientInterface
         }
 
         return response()->json([
-            "success" => true,
-            "message" => "Clients List",
+            "message" => "قائمة الزبائن",
             "data" => $client
         ]);
     }
