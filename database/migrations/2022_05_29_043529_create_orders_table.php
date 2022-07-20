@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->integer('cost');
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
+            $table->integer('cost')->nullable();
             $table->integer('proposal_id')->unsigned();
-            $table->integer('review_id')->unsigned();
+            $table->integer('review_id')->unsigned()->nullable();
             $table->integer('state_id')->unsigned();
             $table->foreign('proposal_id')->references('id')->on('proposals')->onDelete('cascade');
             $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade');

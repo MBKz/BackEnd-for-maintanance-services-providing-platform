@@ -37,4 +37,9 @@ class InitialOrder extends Model
     {
         return $this->belongsTo(OrderGallery::class);
     }
+
+    public function proposal()
+    {
+        return $this->hasMany(Proposal::class);
+    }
 }

@@ -34,6 +34,7 @@ class InitialOrderController extends Controller
         $service_provider = ServiceProvider::where('user_id', $user_id)->first();
         $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
             ->where('city_id', $service_provider->city_id)
+            ->where('job_id',$service_provider->job_id)
             ->get();
 
         return response()->json([
@@ -118,14 +119,7 @@ class InitialOrderController extends Controller
     public function destroy($id)
     {
 
-        $user_id = Auth::id();
-        $client = Client::where('user_id', $user_id)
-            ->first();
-
-        $client_id = $client->id;
-        $initalOrder = InitialOrder::where('id', $id)
-            ->where('client_id', $client_id)
-            ->first();
+        $initalOrder = InitialOrder::where('id', $id)->first();
 
         if ($initalOrder == null) {
             return response()->json([
