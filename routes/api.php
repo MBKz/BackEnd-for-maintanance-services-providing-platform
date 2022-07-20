@@ -15,6 +15,8 @@ use App\Http\Controllers\Actors\ServiceProviderController;
 use App\Http\Controllers\Auth\ConfirmController;
 use App\Http\Controllers\FAQ\FaqController;
 use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
+use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use Illuminate\Support\Facades\Route;
@@ -120,6 +122,12 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
 
             Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
+//new
+            Route::post('proposal/add', [ProposalController::class, 'store']);
+            Route::get('proposal/forProvider', [ProposalController::class, 'get_all_for_provider']);
+            Route::get('proposal/delete/{id}', [ProposalController::class, 'destroy']);
+
+            Route::post('order/confirm', [OrderController::class, 'order_confirm']);
 
         });
 
@@ -135,6 +143,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
             Route::get('initialOrder/forClient', [InitialOrderController::class, 'get_all_for_client']);
             Route::delete('initialOrder/delete/{id}', [InitialOrderController::class, 'destroy']);
+//new
+            Route::get('proposal/forClient/{id}', [ProposalController::class, 'get_all_for_client']);
+
         });
 
 

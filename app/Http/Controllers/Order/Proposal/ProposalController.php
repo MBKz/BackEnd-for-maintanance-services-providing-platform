@@ -11,31 +11,42 @@ use Illuminate\Support\Facades\Validator;
 class ProposalController extends Controller
 {
 
-    public function get_all()
+    public function get_all_for_provider()
     {
         $user_id = auth()->user()->id;
-        $client_id = ServiceProvider::where('user_id',$user_id)->first();
-        $initialOrders  = Proposal::with('job','state','city','client')
-        ->where('client_id',$client_id->id)
-        ->get(); 
+        $service_provider = ServiceProvider::where('user_id',$user_id)->first();
+        $proposal  = Proposal::with('service_provider','initial_order','state')
+        ->where('service_provider_id',$service_provider->id)
+        ->get();
 
         return response()->json([
-            "success" => true,
             "message" => "جميع الطلبات الخاصة بك",
-            "data" => $initialOrders
+            "data" => $proposal
         ]);
     }
 
+    public function get_all_for_client($id)
+    {        
+
+        $proposals = Proposal::where('initial_order_id' ,$id)->with('state','service_provider')->get();
+
+        return response()->json([
+            "message" => "جميع الطلبات الخاصة بك",
+            "data" => $proposals
+        ]);
+    }
 
     public function store(Request $request)
     {
 
         $input = $request->all();
 
+        
         $validator = Validator::make($input, [
             'estimation_time' => 'required',
             'estimation_cost' => 'required',
-            'date' => 'required'
+            'date' => 'required',
+            'initial_order_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -49,11 +60,36 @@ class ProposalController extends Controller
             'estimation_time' => $request->estimation_time,
             'estimation_cost' => $request->estimation_cost,
             'date' => $request->date,
-            'service_provider_id' => $service_provider 
+            'note' => $request->note,
+            'initial_order_id' => $request->initial_order_id,
+            'service_provider_id' => $service_provider->id,
+            'state_id' => 1,
         ]);
+
+        $proposal->initial_order()->update([
+            'state_id' => 2,
+        ]); 
+        return response()->json([
+            "message" => "تم ارسال عرض الصيانة بنجاح",
+            "data" => $proposal
+        ]);
+    }
+
+    public function destroy($id)
+    {
+
+        $proposal = Proposal::where('id', $id)->first();
+
+        if ($proposal == null) {
+            return response()->json([
+                "error" => "هذا الطلب غير موجود"
+            ], 404);
+        }
+        $proposal->delete();
+
         return response()->json([
             "success" => true,
-            "message" => "تم الطلب بنجاح",
+            "message" => "تم حذف هذا العرض بنجاح",
             "data" => $proposal
         ]);
     }
