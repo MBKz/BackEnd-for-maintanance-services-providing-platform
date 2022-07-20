@@ -122,12 +122,13 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
 
             Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
-//new
+
             Route::post('proposal/add', [ProposalController::class, 'store']);
             Route::get('proposal/forProvider', [ProposalController::class, 'get_all_for_provider']);
             Route::get('proposal/delete/{id}', [ProposalController::class, 'destroy']);
 
-            Route::post('order/confirm', [OrderController::class, 'order_confirm']);
+            Route::post('order/start/{id}', [OrderController::class, 'order_start']);
+            Route::post('order/end/{id}', [OrderController::class, 'order_end']);
 
         });
 
@@ -143,8 +144,10 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
             Route::get('initialOrder/forClient', [InitialOrderController::class, 'get_all_for_client']);
             Route::delete('initialOrder/delete/{id}', [InitialOrderController::class, 'destroy']);
-//new
+
             Route::get('proposal/forClient/{id}', [ProposalController::class, 'get_all_for_client']);
+
+            Route::post('order/confirm/{id}', [OrderController::class, 'order_confirm']);
 
         });
 

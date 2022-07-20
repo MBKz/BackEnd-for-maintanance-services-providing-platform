@@ -31,7 +31,10 @@ class InitialOrderController extends Controller
     public function get_all_for_provider()
     {
         $user_id = auth()->user()->id;
-        $service_provider = ServiceProvider::where('user_id', $user_id)->first();
+        $service_provider = ServiceProvider::where('user_id', $user_id)
+        ->where('account_status_id',1)
+        ->first();
+        
         $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
             ->where('city_id', $service_provider->city_id)
             ->where('job_id',$service_provider->job_id)
