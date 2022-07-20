@@ -14,5 +14,9 @@ class Identity extends Model
     protected $fillable = [
         'number' ,'image'
     ];
-    
+
+    public function serviceProvider()
+    {
+        return $this->hasOne(ServiceProvider::class);
+    }
 }

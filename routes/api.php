@@ -76,6 +76,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
 
+            // clients & FAQ & accountStatus
+            Route::get('client/get-all', [ClientController::class, 'get_all']);
+            Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
             Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
 
             // job
@@ -97,14 +100,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('serviceProvider/requests/get-all', [ServiceProviderController::class, 'getProviderRequests']);
             Route::post('serviceProvider/active/{id}', [ServiceProviderController::class, 'AcceptProvider']);
             Route::get('serviceProvider/get-all', [ServiceProviderController::class, 'getAllServiceProvider']);
+            Route::get('serviceProvider/block/{id}', [ServiceProviderController::class, 'block']);
+            Route::get('serviceProvider/unblock/{id}', [ServiceProviderController::class, 'unblock']);
 
-
-            Route::get('serviceProvider/block/{id}', [ServiceProviderController::class, 'getProviderBlock']);
-            Route::get('serviceProvider/unblock/{id}', [ServiceProviderController::class, 'getProviderBlock']);
-
-            // clients & FAQ
-            Route::get('client/get-all', [ClientController::class, 'get_all']);
-            Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
         });
 
         // ServiceProvider Api
@@ -113,12 +111,13 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
             Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
 
-            Route::post('serviceProvider/swichActivitProvider', [ServiceProviderController::class, 'swichActivitProvider']);
+            Route::post('serviceProvider/switchStatus', [ServiceProviderController::class, 'switchStatus']);
 
+            //  posts
             Route::post('post/add', [PostController::class, 'store']);
-            Route::post('post/update/{id}', [PostController::class, 'update']);
             Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
             Route::get('post/profile', [PostController::class, 'show']);
+
 
             Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
 
@@ -130,7 +129,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
             Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
 
-            Route::get('post/get_all', [PostController::class, 'get_all']);
+            Route::get('provider-info/{id}', [PostController::class, 'provider_info']);
 
             Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
             Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);

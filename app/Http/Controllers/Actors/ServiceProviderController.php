@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Actors;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\Actors\ServiceProviderInterface;
 use App\Models\ServiceProvider;
-use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +16,9 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
     public function getAllServiceProvider()
     {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->get();
+        $serviceProvider  = ServiceProvider::with('user','identity','job','account_status','city')
+            ->where('account_status_id' ,'!=' ,4)
+            ->get();
 
         return response()->json([
             "message" => "قائمة مزودي الخدمات",
@@ -57,25 +59,44 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
     public function getProviderRequests()
     {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',4)->get();
+        $serviceProvider  = ServiceProvider::with('user','identity','job','account_status','city')->where('account_status_id',4)->get();
         return response()->json([
             "message" => "طلبات انضمام مزودي الخدمات",
             "data" => $serviceProvider
         ]);
     }
 
-
-
     public function block(Request $request,$id)
     {
-        // TODO: Implement block() method.
+        $provider = ServiceProvider::firstWhere('id',$id);
+        if($provider == null)    return response()->json(['error' =>  'عذرا مزود الخدمة غير موجود'],404);
+
+        $provider['account_status_id'] = 3;
+        $provider->update();
+
+        //TODO: ارسال اشعار او ايميل انو انحظر
+
+        $block =$provider->block()->create([
+            'duration' => 7,
+            'start_date' => now(),
+            'end_date' => Carbon::now()->addDays(7)
+        ]);
+        return response(['message' => 'تم حظر مزود الخدمة' ,'data' =>$block],200);
     }
 
     public function unblock(Request $request,$id)
     {
-        // TODO: Implement unblock() method.
-    }
+        $provider = ServiceProvider::firstWhere('id',$id);
+        if($provider == null)    return response()->json(['error' =>  'عذرا مزود الخدمة غير موجود'],404);
 
+        $provider['account_status_id'] = 1;
+        $provider->update();
+
+        //TODO: ارسال اشعار او ايميل انو انفك الحظر
+
+        $provider->block()->delete();
+        return response(['message' => 'تم فك الحظر عن مزود الخدمة' ,'data' =>$provider],200);
+    }
 
     public function switchStatus()
     {
@@ -89,6 +110,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         elseif ($serviceProvider['account_status_id'] == 2) $serviceProvider['account_status_id'] = 1;
 
         $serviceProvider->update();
-        return response()->json(['message' =>  'حالة موزد الخدمة الحالية ' .$serviceProvider->account_status->title]);
+        return response()->json(['message' =>  $serviceProvider->account_status->title]);
     }
+
 }

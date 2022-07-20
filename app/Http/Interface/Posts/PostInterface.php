@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 interface PostInterface {
 
-    public function get_all();
+    public function provider_info($id);
     public function store(Request $request);
     public function destroy($id);
 }

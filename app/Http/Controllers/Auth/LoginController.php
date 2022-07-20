@@ -8,15 +8,22 @@ use App\Http\Interface\Auth\LoginInterface;
 use App\Models\Admin;
 use App\Models\Client;
 use App\Models\ServiceProvider;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Validator;
 
 
 class LoginController extends Controller implements LoginInterface
 {
 
-    public function loginAdmin()
+    public function loginAdmin(Request $request)
     {
+        $input = Validator::make($request->all() ,[
+            'email' => 'email|required',
+            'password' => 'required',
+        ]);
+        if($input->fails())
+            return response(['errors'=>$input->errors()->all()],400);
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
@@ -33,13 +40,24 @@ class LoginController extends Controller implements LoginInterface
     }
 
 
-    public function loginServiceProvider()
+    public function loginServiceProvider(Request $request)
     {
+        $input = Validator::make($request->all() ,[
+            'email' => 'email|required',
+            'password' => 'required',
+            'device_token' => 'required'
+        ]);
+        if($input->fails())
+            return response(['errors'=>$input->errors()->all()],400);
+
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
             $provider = ServiceProvider::where('user_id', $user_id)->first();
             if ($provider != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
+                $provider->update([
+                    'device_token' => $request->device_token
+                ]);
                 return response([
                     'message' =>  'مرحبا بكم من جديد',
                     'token' => $token,
@@ -50,13 +68,24 @@ class LoginController extends Controller implements LoginInterface
 
     }
 
-    public function loginClient()
+    public function loginClient(Request $request)
     {
+        $input = Validator::make($request->all() ,[
+            'email' => 'email|required',
+            'password' => 'required',
+            'device_token' => 'required'
+        ]);
+        if($input->fails())
+            return response(['errors'=>$input->errors()->all()],400);
+
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
             $client = Client::firstWhere('user_id', $user_id);
             if ($client != null) {
                 $token =  Auth::user()->createToken('KhaleaAlena')->accessToken;
+                $client->update([
+                    'device_token' => $request->device_token
+                ]);
                 return response([
                     'message' =>  'مرحبا بكم من جديد',
                     'token' => $token,

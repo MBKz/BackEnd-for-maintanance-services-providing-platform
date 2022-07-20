@@ -17,19 +17,16 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
         $user_id = Auth::user()->id;
         $provider = ServiceProvider::where('user_id', $user_id)->with('user','job','account_status','city')->first();
 
-        return response()->json(['message' =>  'Your Profile', 'data' => $provider]);
+        return response()->json(['message' =>  'معلوماتك الشخصية', 'data' => $provider]);
     }
 
     public function editProfile(Request $request)
     {
 
         $user = Auth::user();
-
-
         $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg',
+            'image' => 'image|mimes:jpg,png,jpeg,gif,svg,bmp',
         ]);
-
 
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
@@ -52,14 +49,11 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
 
         $user->update();
 
-        $user_id = $user['id'];
+        if ($request->city_id != null)
+            $user->serviceProvider()->update([
+                'city_id' => $request->city_id
+            ]);
 
-        $serviceProvider = ServiceProvider::where('user_id', $user_id)->first();
-
-        if ($request->city_id != null)            $serviceProvider['city_id'] = $request->city_id;
-        if ($request->account_status_id != null)  $serviceProvider['account_status_id'] = $request->account_status_id;
-        $serviceProvider->update();
-
-        return response()->json(['message' =>  'You Update Your Profile']);
+        return response()->json(['message' =>  'تم تعديل البروفايل']);
     }
 }

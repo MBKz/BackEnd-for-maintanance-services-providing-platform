@@ -16,54 +16,42 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller implements PostInterface
 {
-    public function get_all()
+    public function provider_info($id)
     {
-        $posts  = Post::with('posts_gallery', 'service_provider')->get();
 
-        if ($posts == null) {
-            return response()->json([
-                "message" => "Not Found Post"
-            ], 422);
-        }
+        $povider  = ServiceProvider::with('user' ,'post' ,'post.posts_gallery')->get();
 
         return response()->json([
-            "success" => true,
-            "message" => "Posts List",
-            "data" => $posts
+            "message" => "معلومات المزود",
+            "data" => $povider
         ]);
     }
-
-
 
     public function store(Request $request)
     {
         $input = $request->all();
-
         $validator = Validator::make($input, [
             'text' => 'required',
             'date' => 'required',
             'image[]' => 'array|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
-
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
 
-        $user_id = auth()->user()->id;
-        $service_provider_id = ServiceProvider::where('user_id', $user_id)->first();
+        $service_provider = ServiceProvider::where('user_id', auth()->user()->id)->first();
 
-        $post = Post::create([
+        $post = $service_provider->post()->create([
             'text' => $request->text,
             'date' => $request->date,
-            'service_provider_id' => $service_provider_id->id,
         ]);
 
 
+        //TODO: upload func
         $images = $request->image;
         if ($request->image != null) {
             $echImages[count($images)] = null;
-
 
             for ($i = 0; $i < count($images); $i++) {
                 if ($request->hasFile('image')) {
@@ -87,71 +75,54 @@ class PostController extends Controller implements PostInterface
 
             for ($i = 0; $i < count($image); $i++) {
 
-                PostsGallery::create([
+                $post->posts_gallery()->create([
                     'title' => $request->title,
                     'image' => $echImages[$i],
-                    'post_id' => $post->latest('id')->first()->id,
                 ]);
             }
         }
 
 
         return response()->json([
-            "success" => true,
-            "message" => "Post created successfully.",
-            "data" => $post->posts_gallery
+            "message" => "تمت عملية النشر بنجاح",
+            "data" => $post->load('posts_gallery')
         ]);
     }
 
     public function show()
     {
-        $user_id = Auth::id();
-        $service_provider = ServiceProvider::where('user_id', $user_id)
+
+        $service_provider = ServiceProvider::where('user_id', Auth::id())
             ->first();
 
-        $service_provider_id = $service_provider->id;
-
-        $post = Post::with('posts_gallery', 'service_provider')
-            ->where('service_provider_id', $service_provider_id)
+        $post = Post::with('posts_gallery')
+            ->where('service_provider_id', $service_provider->id)
             ->get();
 
-        if ($post == null) {
-            return response()->json([
-                "message" => "Not Found Post"
-            ], 422);
-        }
-
         return response()->json([
-            "success" => true,
-            "message" => "Post retrieved successfully.",
+            "message" => "قائمة المنشورات",
             "data" => $post
         ]);
     }
 
-
-
     public function destroy($id)
     {
-        $user_id = Auth::id();
-        $service_provider = ServiceProvider::where('user_id', $user_id)
-            ->first();
 
-        $service_provider_id = $service_provider->id;
-        $post = Post::where('id', $id)
-            ->where('service_provider_id', $service_provider_id)
-            ->first();
-            
+        $post = Post::with('posts_gallery')->firstWhere('id' ,$id);
         if ($post == null) {
             return response()->json([
-                "message" => "Not Found Post"
-            ], 422);
+                "message" => "غير موجود"
+            ], 404);
+        }
+
+        $photos = $post->posts_gallery;
+        foreach ($photos as $photo){
+            $photo->delete();
         }
         $post->delete();
 
         return response()->json([
-            "success" => true,
-            "message" => "Post deleted successfully ",
-            "data" => $post
+            "message" => "تم حذف المنشور",
         ]);
     }
 }
