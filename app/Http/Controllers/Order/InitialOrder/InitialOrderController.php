@@ -8,30 +8,40 @@ use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class InitialOrderController extends Controller
 {
-    public function get_all()
+    public function get_all_for_client()
     {
         $user_id = auth()->user()->id;
-        $client_id = Client::where('user_id',$user_id)->first();
-        $initialOrders  = InitialOrder::with('job','state','city','client')
-        ->where('client_id',$client_id->id)
-        ->get(); 
-
-        if ($initialOrders == null) {
-            return response()->json([
-                "error" => "Not Found Initial Orders"
-            ], 422);
-        }
+        $client_id = Client::where('user_id', $user_id)->first();
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
+            ->where('client_id', $client_id->id)
+            ->get();
 
         return response()->json([
-            "success" => true,
             "message" => "جميع الطلبات الخاصة بك",
             "data" => $initialOrders
         ]);
     }
+
+
+    public function get_all_for_provider()
+    {
+        $user_id = auth()->user()->id;
+        $service_provider = ServiceProvider::where('user_id', $user_id)->first();
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
+            ->where('city_id', $service_provider->city_id)
+            ->get();
+
+        return response()->json([
+            "message" => "جميع الطلبات الخاصة بك",
+            "data" => $initialOrders
+        ]);
+    }
+
     public function store(Request $request)
     {
 
@@ -44,6 +54,7 @@ class InitialOrderController extends Controller
             'longitude' => 'required',
             'job_id' => 'required',
             'city_id' => 'required',
+            'image[]' => 'array|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
 
         if ($validator->fails()) {
@@ -51,7 +62,8 @@ class InitialOrderController extends Controller
         }
 
         $user_id = auth()->user()->id;
-        $client_id = Client::where('user_id',$user_id)->first();
+        $client_id = Client::where('user_id', $user_id)->first();
+
 
         $initialOrder = InitialOrder::create([
             'description' => $request->description,
@@ -63,35 +75,42 @@ class InitialOrderController extends Controller
             'city_id' => $request->city_id,
             'client_id' => $client_id->id,
         ]);
-        return response()->json([
-            "success" => true,
-            "message" => "تم الطلب بنجاح",
-            "data" => $initialOrder
-        ]);
-    }
-    public function update(Request $request, $id)
-    {
 
-        $initialOrder = InitialOrder::find($id);
 
-        if ($initialOrder == null) {
-            return response()->json([
-                "error" => "هذا الطلب غير موجود"
-            ], 422);
+
+        $images = $request->image;
+        if ($request->image != null) {
+            $echImages[count($images)] = null;
+
+
+            for ($i = 0; $i < count($images); $i++) {
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $filename = time() . $image[$i]->getClientOriginalName();
+                    Storage::disk('public')->putFileAs(
+                        'initialOrder',
+                        $image[$i],
+                        $filename
+                    );
+                    $image[$i] = $request->image = url('/') . '/storage/' . 'initialOrder' . '/' . $filename;
+                    $echImages[$i] = $image[$i];
+                } else {
+                    $image[$i] = null;
+                }
+            }
+
+            for ($i = 0; $i < count($image); $i++) {
+
+                $initialOrder->order_gallery()->create([
+                    'title' => $request->title,
+                    'image' => $echImages[$i],
+                    'initial_order_id' => $initialOrder->id
+                ]);
+            }
         }
 
-        if ($request->description != null)$initialOrder['description'] = $request->description;
-        if ($request->location != null)   $initialOrder['location'] = $request->location;
-        if ($request->latitude != null)   $initialOrder['latitude'] = $request->latitude;
-        if ($request->longitude != null)  $initialOrder['longitude'] = $request->longitude;
-        if ($request->job_id != null)     $initialOrder['job_id'] = $request->job_id;
-        if ($request->city_id != null)    $initialOrder['city_id'] = $request->city_id;
-
-        $initialOrder->update();
-
         return response()->json([
-            "success" => true,
-            "message" => "تم تعديل هذا الطلب بنجاح",
+            "message" => "تم الطلب بنجاح",
             "data" => $initialOrder
         ]);
     }
@@ -107,12 +126,11 @@ class InitialOrderController extends Controller
         $initalOrder = InitialOrder::where('id', $id)
             ->where('client_id', $client_id)
             ->first();
-            
 
         if ($initalOrder == null) {
             return response()->json([
                 "error" => "هذا الطلب غير موجود"
-            ], 422);
+            ], 404);
         }
         $initalOrder->delete();
 

@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+// TODO:json.response
 Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
     // Register
@@ -59,11 +59,8 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
     // Needs Auth
     Route::group(['middleware' => 'auth:api'], function () {
 
-        //TODO: re-logout !!
         Route::post('user/logout', [LogoutController::class, 'logout']);
-
-        //TODO: path !!
-        Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
+        Route::post('FAQ/add/question', [FaqController::class, 'AddQuestion']);
 
         // Super Admin
         Route::group(['middleware' => 'superAdmin'], function () {
@@ -75,32 +72,38 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Admin Api
         Route::group(['middleware' => 'admin'], function () {
 
+            // profile
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
 
+            Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
+
+            // job
             Route::post('job/add', [JobController::class, 'store']);
             Route::post('job/update/{id}', [JobController::class, 'update']);
             Route::delete('job/delete/{id}', [JobController::class, 'destroy']);
 
+            //  city
             Route::post('city/add', [CityController::class, 'store']);
             Route::post('city/update/{id}', [CityController::class, 'update']);
             Route::delete('city/delete/{id}', [CityController::class, 'destroy']);
 
-            Route::post('company/add', [CompanyController::class, 'store']);
-            Route::post('company/update/{id}', [CompanyController::class, 'update']);
-            Route::delete('company/delete/{id}', [CompanyController::class, 'destroy']);
+//            //    company
+//            Route::post('company/add', [CompanyController::class, 'store']);
+//            Route::post('company/update/{id}', [CompanyController::class, 'update']);
+//            Route::delete('company/delete/{id}', [CompanyController::class, 'destroy']);
 
-            Route::post('company/add', [CompanyController::class, 'store']);
-
-            Route::post('serviceProvider/active/{id}', [ServiceProviderController::class, 'AcceptProvider']);
+            //  service providers manage
             Route::get('serviceProvider/requests/get-all', [ServiceProviderController::class, 'getProviderRequests']);
-            Route::get('serviceProvider/activited/get-all', [ServiceProviderController::class, 'getProviderActivited']);
-            Route::get('serviceProvider/un-activite/get-all', [ServiceProviderController::class, 'getProviderUnActive']);
-            Route::get('serviceProvider/block/get-all', [ServiceProviderController::class, 'getProviderBlock']);
+            Route::post('serviceProvider/active/{id}', [ServiceProviderController::class, 'AcceptProvider']);
             Route::get('serviceProvider/get-all', [ServiceProviderController::class, 'getAllServiceProvider']);
 
-            Route::get('client/get-all', [ClientController::class, 'get_all']);
 
+            Route::get('serviceProvider/block/{id}', [ServiceProviderController::class, 'getProviderBlock']);
+            Route::get('serviceProvider/unblock/{id}', [ServiceProviderController::class, 'getProviderBlock']);
+
+            // clients & FAQ
+            Route::get('client/get-all', [ClientController::class, 'get_all']);
             Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
         });
 
@@ -117,6 +120,8 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
             Route::get('post/profile', [PostController::class, 'show']);
 
+            Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
+
         });
 
         // Client Api
@@ -129,9 +134,8 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
             Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
             Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
-            Route::get('initialOrder/get-all', [InitialOrderController::class, 'get_all']);
+            Route::get('initialOrder/forClient', [InitialOrderController::class, 'get_all_for_client']);
             Route::delete('initialOrder/delete/{id}', [InitialOrderController::class, 'destroy']);
-
         });
 
 
@@ -144,7 +148,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Provider And Client Api
         Route::group(['middleware' => 'provider.client'], function () {
 
-            Route::post('FAQ/add/question', [FaqController::class, 'AddQuestion']);
         });
 
         // Admin And Client Api

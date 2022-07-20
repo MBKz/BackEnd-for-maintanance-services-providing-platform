@@ -33,4 +33,8 @@ class InitialOrder extends Model
     {
         return $this->belongsTo(Client::class);
     }
+    public function order_gallery()
+    {
+        return $this->belongsTo(OrderGallery::class);
+    }
 }
