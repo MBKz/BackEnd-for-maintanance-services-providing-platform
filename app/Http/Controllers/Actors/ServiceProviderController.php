@@ -12,169 +12,83 @@ use Illuminate\Support\Facades\Validator;
 
 
 class ServiceProviderController extends Controller implements ServiceProviderInterface
-{ 
+{
 
-    public function getAllServiceProvider() 
+    public function getAllServiceProvider()
     {
         $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->get();
 
-        if ($serviceProvider == null) {
-            return response()->json([
-                "message" => "Not Found Service Provider"
-            ], 422);
-        }
-
         return response()->json([
-            "success" => true,
-            "message" => "Service Providers List",
-            "data" => $serviceProvider
-        ]);
-    }
-
-    public function getProviderActivited() 
-    {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',1)->get();
-
-        if ($serviceProvider == null) {
-            return response()->json([
-                "message" => "Not Found Service Provider Activited"
-            ], 422);
-        }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Service Providers Activited List",
-            "data" => $serviceProvider
-        ]);
-    }
-
-        public function getProviderUnActive() 
-    {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',2)->get();
-
-        if ($serviceProvider == null) {
-            return response()->json([
-                "message" => "Not Found Service Provider (Not Activited)"
-            ], 422);
-        }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Service Providers Not Activited List",
-            "data" => $serviceProvider
-        ]);
-    }
-
-    public function getProviderBlocked() 
-    {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',3)->get();
-
-        if ($serviceProvider == null) {
-            return response()->json([
-                "message" => "Not Found Service Provider Blocked"
-            ], 422);
-        }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Service Providers Blocked List",
-            "data" => $serviceProvider
-        ]);
-    }
-
-
-    public function getProviderRequests() 
-    {
-        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',4)->get();
-
-        if ($serviceProvider == null) {
-            return response()->json([
-                "message" => "Not Found Service Provider Requests"
-            ], 422);
-        }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Service Providers Requests List",
+            "message" => "قائمة مزودي الخدمات",
             "data" => $serviceProvider
         ]);
     }
 
     public function AcceptProvider(Request $request,$id){
 
-        
         $validator = Validator::make($request->all(), [
-            'account_status_id' => 'required'
+            'accept' => 'required'
         ]);
-
-
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
         $serviceProvider = ServiceProvider::where('id',$id)->first();
+        if($serviceProvider ==null) return response()->json(['error' =>  'مزود الخدمة غير موجود'],404);
 
-        $user = User::where('id', $serviceProvider->user_id)->first();
+        $user = $serviceProvider->user(); //User::where('id', $serviceProvider->user_id)->first();
 
-        if ($request->account_status_id == 0) {
-            
+        if ($request->accept == false) {
             $serviceProvider->delete();
             $user->delete();
-
             return response()->json([
-                "message" => "Service Provider deleted successfully "
-            ], 422);
+                "message" => "تم رفض الطلب",
+                "data" => [$user]
+            ], 200);
         }
 
-        if($serviceProvider ==null)
-        {
-            return response()->json(['error' =>  'Not Found Service Provider'],422);
-        }
-
-        $serviceProvider['account_status_id'] = $request->account_status_id;
-
+        $serviceProvider['account_status_id'] = 1;
         $serviceProvider->update();
-
-
         return response()->json([[
-            'message' =>  'The service provider has become active.',
+            'message' =>  'تمت إضافة مزود خدمة جديد',
             'data' =>$serviceProvider
-            ]]);
-
-
+        ]]);
     }
 
-    public function swichActivitProvider(Request $request){
-
-        
-        $validator = Validator::make($request->all(), [
-            'account_status_id' => 'required'
+    public function getProviderRequests()
+    {
+        $serviceProvider  = ServiceProvider::with('user','job','account_status','city')->where('account_status_id',4)->get();
+        return response()->json([
+            "message" => "طلبات انضمام مزودي الخدمات",
+            "data" => $serviceProvider
         ]);
+    }
 
 
-        if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
-        }
 
+    public function block(Request $request,$id)
+    {
+        // TODO: Implement block() method.
+    }
+
+    public function unblock(Request $request,$id)
+    {
+        // TODO: Implement unblock() method.
+    }
+
+
+    public function switchStatus()
+    {
         $serviceProvider = ServiceProvider::where('user_id',Auth::user()->id)->first();
-
-
         if($serviceProvider ==null)
         {
-            return response()->json(['error' =>  'Not Found Service Provider'],422);
+            return response()->json(['error' =>  'Not Found Service Provider'],404);
         }
 
-        $serviceProvider['account_status_id'] = $request->account_status_id;
+        if($serviceProvider['account_status_id'] == 1) $serviceProvider['account_status_id'] = 2;
+        elseif ($serviceProvider['account_status_id'] == 2) $serviceProvider['account_status_id'] = 1;
 
         $serviceProvider->update();
-
-
-        return response()->json([
-            'message' =>  'The service provider has become ' .$serviceProvider->account_status->title,
-            'data' =>$serviceProvider
-            ]);
-
-
+        return response()->json(['message' =>  'حالة موزد الخدمة الحالية ' .$serviceProvider->account_status->title]);
     }
-
 }

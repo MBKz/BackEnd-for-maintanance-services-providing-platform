@@ -27,16 +27,12 @@ class JobController extends Controller implements JobInterface
     public function store(Request $request)
     {
         $input = $request->all();
-
         $validator = Validator::make($input, [
             'title' => 'required',
             'description' => 'required',
-            'icon' => 'required|image|mimes:png,jpg,jpeg',
-            'image' => 'required|image|mimes:png,jpg,jpeg',
-
-
+            'icon' => 'required|image|mimes:png,jpg,jpeg,bmp',
+            'image' => 'required|image|mimes:png,jpg,jpeg,bmp',
         ]);
-
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
@@ -88,31 +84,26 @@ class JobController extends Controller implements JobInterface
     public function show($id)
     {
         $job = Job::find($id);
-
         if ($job == null) {
             return response(["error" => "عذرا غير موجود"], 404);
         }
         return response(["message" => "معلومات الخدمة", "data" => $job]);
     }
 
-
     public function update(Request $request,$id)
     {
 
         $job = Job::find($id);
-
         $validator = Validator::make($request->all(), [
-            'icon' => 'image|mimes:png,jpg,jpeg',
-            'image' => 'image|mimes:png,jpg,jpeg',
+            'icon' => 'image|mimes:png,jpg,jpeg,bmp',
+            'image' => 'image|mimes:png,jpg,jpeg,bmp',
         ]);
-
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
         // TODO: upload func
-
-        if ($request->hasFile('icon') && ($request->hasFile('icon')) != null) {
+        if ($request->hasFile('icon')) {
             $icon = $request->file('icon');
             $filename = time() . $icon->getClientOriginalName();
             Storage::disk('public')->putFileAs(
@@ -150,15 +141,12 @@ class JobController extends Controller implements JobInterface
         ]);
     }
 
-
-
     public function destroy($id)
     {
         $job = Job::firstWhere('id', $id);
-
         if ($job == null) {
             return response()->json([
-                "error" => "عذرا"
+                "error" => " عذرا غير موجود"
             ], 404);
         }
         $job->delete();

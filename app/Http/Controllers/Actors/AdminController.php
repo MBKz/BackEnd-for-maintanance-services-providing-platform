@@ -15,14 +15,7 @@ class AdminController extends Controller implements AdminInterface
 
     public function getAdmins()
     {
-        $admin  = Admin::with('user','role')->get();
-
-        if ($admin == null) {
-            return response()->json([
-                "error" => "لايوجد أي موظف"
-            ], 404);
-        }
-
+        $admin  = Admin::with('user','role')->where('role_id' ,2)->get();
         return response()->json([
             "message" => "قائمة الموظفين",
             "data" => $admin
@@ -53,20 +46,19 @@ class AdminController extends Controller implements AdminInterface
             'gender' => $request->gender,
         ]);
 
-        $user()->admin()->create(['role_id' => 2]);
+          $user->admin()->create(['role_id' => 2]);
         return response()->json([['message' =>  'تمت الإضافة بنجاح' ,'data' => $user->load('admin')]]);
     }
 
     public function destroy($id)
     {
         $admin = Admin::where('id', $id)->first();
-        $user = User::where('id', $admin->user_id)->first();
-
         if ($admin == null) {
             return response()->json([
                 "error" => "عذرا غير موجود"
             ], 404);
         }
+        $user = User::where('id', $admin->user_id)->first();
         $admin->delete();
         $user->delete();
 

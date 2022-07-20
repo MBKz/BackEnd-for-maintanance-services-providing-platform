@@ -20,7 +20,7 @@ class Admin
     {
         $user_id = Auth::user()->id;
         $admin = ModelsAdmin::where('user_id', $user_id)->first();
-        if($admin != null && $admin->role_id == 2){
+        if($admin != null ){
             return $next($request);
         }
         return response(['errors'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 400);

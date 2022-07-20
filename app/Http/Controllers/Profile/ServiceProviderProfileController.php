@@ -16,7 +16,7 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
     {
         $user_id = Auth::user()->id;
         $provider = ServiceProvider::where('user_id', $user_id)->with('user','job','account_status','city')->first();
-        
+
         return response()->json(['message' =>  'Your Profile', 'data' => $provider]);
     }
 

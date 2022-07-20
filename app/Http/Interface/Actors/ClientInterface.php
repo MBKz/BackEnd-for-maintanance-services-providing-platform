@@ -4,5 +4,5 @@ namespace App\Http\Interface\Actors;
 
 interface ClientInterface
 {
-      public function getAllClient();
+      public function get_all();
 }
