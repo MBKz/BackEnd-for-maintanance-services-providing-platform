@@ -19,7 +19,7 @@ class Order extends Model
 
     public function review()
     {
-        return $this->hasOne(Review::class);
+        return $this->belongsTo(Review::class);
     }
 
     public function state()
