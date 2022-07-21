@@ -7,7 +7,6 @@ use App\Models\Client;
 use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,9 +15,9 @@ class InitialOrderController extends Controller
     public function get_all_for_client()
     {
         $user_id = auth()->user()->id;
-        $client_id = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
-            ->where('client_id', $client_id->id)
+        $client = Client::where('user_id', $user_id)->first();
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client','proposal')
+            ->where('client_id', $client->id)
             ->get();
 
         return response()->json([

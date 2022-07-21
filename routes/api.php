@@ -130,6 +130,8 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('order/start/{id}', [OrderController::class, 'order_start']);
             Route::post('order/end/{id}', [OrderController::class, 'order_end']);
 
+            Route::get('order/orderCurrent/forProvider', [OrderController::class, 'order_current_for_provider']);
+            Route::get('order/orderHistory/forProvider', [OrderController::class, 'order_history_for_provider']);
         });
 
         // Client Api
@@ -148,6 +150,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('proposal/forClient/{id}', [ProposalController::class, 'get_all_for_client']);
 
             Route::post('order/confirm/{id}', [OrderController::class, 'order_confirm']);
+
+            Route::get('order/orderCurrent/forClient', [OrderController::class, 'order_current_for_client']);
+            Route::get('order/orderHistory/forClient', [OrderController::class, 'order_history_for_client']);
 
         });
 

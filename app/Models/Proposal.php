@@ -29,4 +29,9 @@ class Proposal extends Model
         return $this->belongsTo(InitialOrder::class);
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
 }
