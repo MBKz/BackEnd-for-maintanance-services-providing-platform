@@ -11,4 +11,9 @@ class State extends Model
     public $timestamps = false;
 
     protected $table = 'states';
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

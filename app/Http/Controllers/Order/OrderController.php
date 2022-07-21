@@ -43,7 +43,6 @@ class OrderController extends Controller
         ]);
     }
 
-
     public function order_start($id)
     {
         $order = Order::find($id);
@@ -121,7 +120,6 @@ class OrderController extends Controller
         ]);
     }
 
-
     public function order_history_for_client()
     {
 
@@ -152,4 +150,20 @@ class OrderController extends Controller
             "data" => $osrderCurrent
         ]);
     }
+
+    public function all_orders(){
+        $orders = Order::with('review' ,'state')->get();//->with('review' ,'state');
+        return response(['message' => 'قائمة الطلبات' ,'data'=>$orders],200);
+    }
+
+    public function all_initials(){
+        $orders = InitialOrder::with('job' ,'state' ,'state')->get();
+        return response(['message' => 'قائمة الخدمات المطلوبة' ,'data'=>$orders],200);
+    }
+
+    public function all_proposals(){
+        $orders = Order::with('state')->get();
+        return response(['message' => 'قائمة عروض الصيانة المقدمة' ,'data'=>$orders],200);
+    }
+
 }
