@@ -16,6 +16,8 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
     {
         $user_id = Auth::user()->id;
         $provider = ServiceProvider::where('user_id', $user_id)->with('user','job','account_status','city')->first();
+        if($provider == null)
+            return response()->json(['message' =>  'لا يوجد مزود خدمة !']);
 
         return response()->json(['message' =>  'معلوماتك الشخصية', 'data' => $provider]);
     }
@@ -49,11 +51,7 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
 
         $user->update();
 
-        if ($request->city_id != null)
-            $user->serviceProvider()->update([
-                'city_id' => $request->city_id
-            ]);
-
         return response()->json(['message' =>  'تم تعديل البروفايل']);
     }
+
 }

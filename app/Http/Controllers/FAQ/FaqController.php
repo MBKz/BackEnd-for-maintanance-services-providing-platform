@@ -13,7 +13,7 @@ class FaqController extends Controller implements FAQInterface
 
     public function get_all(){
 
-        $faqs  = Faq::with('tag')->get();
+        $faqs  = Faq::with('tag')->where('answer' ,'!=' ,'null')->get();
 
         if ($faqs == null) {
             return response()->json([

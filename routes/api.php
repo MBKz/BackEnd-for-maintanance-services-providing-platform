@@ -47,11 +47,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
     Route::post('client/login', [LoginController::class, 'loginClient']);
 
-    //  profile
-    Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
-    Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
-    Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
-
 
     // Available for Visitors
     Route::get('job/get/{id}', [JobController::class, 'show']);
@@ -67,6 +62,10 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
     // Needs Auth
     Route::group(['middleware' => 'auth:api'], function () {
 
+        //  profile
+        Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
+        Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
+
         Route::post('user/logout', [LogoutController::class, 'logout']);
         Route::post('FAQ/add/question', [FaqController::class, 'AddQuestion']);
 
@@ -81,6 +80,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         Route::group(['middleware' => 'admin'], function () {
 
             // profile
+            Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
 
             // clients & FAQ & accountStatus
@@ -122,7 +122,10 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
             Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
 
-            Route::post('serviceProvider/switchStatus', [ServiceProviderController::class, 'switchStatus']);
+            //  availability and activity
+            Route::get('getActivity', [ServiceProviderController::class, 'getActivity']);
+            Route::post('editActivity', [ServiceProviderController::class, 'editActivity']);
+
 
             //  posts
             Route::post('post/add', [PostController::class, 'store']);

@@ -17,8 +17,11 @@ class AdminProfileController extends Controller implements ProfileInterface
     {
         $user_id = Auth::user()->id;
         $admin = Admin::where('user_id', $user_id)->with('user','role')->first();
+        if($admin == null)
+            return response()->json(['message' =>  'لا يوجد مدير !']);
         return response()->json(['message' =>  'المعلومات الشخصية','data' => $admin]);
     }
+
     //TODO: upload func
     public function editProfile(Request $request)
     {

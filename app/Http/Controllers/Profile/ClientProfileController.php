@@ -17,6 +17,8 @@ class ClientProfileController extends Controller implements ProfileInterface
     {
         $user_id = Auth::user()->id;
         $client = Client::where('user_id', $user_id)->with('user')->first();
+        if($client == null)
+            return response()->json(['message' =>  'لا يوجد زبون !']);
 
         return response()->json(['message' =>  'معلوماتك الشخصية','data' => $client]);
     }

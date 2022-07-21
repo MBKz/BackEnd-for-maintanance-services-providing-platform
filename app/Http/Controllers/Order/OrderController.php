@@ -152,17 +152,17 @@ class OrderController extends Controller
     }
 
     public function all_orders(){
-        $orders = Order::with('review' ,'state')->get();//->with('review' ,'state');
+        $orders = Order::with('review' ,'state')->get();
         return response(['message' => 'قائمة الطلبات' ,'data'=>$orders],200);
     }
 
     public function all_initials(){
-        $orders = InitialOrder::with('job' ,'state' ,'state')->get();
+        $orders = InitialOrder::with('job' ,'state' ,'city')->get();
         return response(['message' => 'قائمة الخدمات المطلوبة' ,'data'=>$orders],200);
     }
 
     public function all_proposals(){
-        $orders = Order::with('state')->get();
+        $orders = Proposal::with('state')->get();
         return response(['message' => 'قائمة عروض الصيانة المقدمة' ,'data'=>$orders],200);
     }
 

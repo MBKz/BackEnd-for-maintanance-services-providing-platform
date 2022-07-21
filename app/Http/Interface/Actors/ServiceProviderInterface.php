@@ -10,5 +10,4 @@ interface ServiceProviderInterface
       public function block(Request $request,$id);
       public function unblock(Request $request,$id);
       public function AcceptProvider(Request $request,$id);
-      public function switchStatus();
 }

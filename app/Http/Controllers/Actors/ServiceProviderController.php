@@ -98,19 +98,34 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         return response(['message' => 'تم فك الحظر عن مزود الخدمة' ,'data' =>$provider],200);
     }
 
-    public function switchStatus()
+    public function editActivity(Request $request)
     {
-        $serviceProvider = ServiceProvider::where('user_id',Auth::user()->id)->first();
-        if($serviceProvider ==null)
-        {
-            return response()->json(['error' =>  'Not Found Service Provider'],404);
-        }
 
-        if($serviceProvider['account_status_id'] == 1) $serviceProvider['account_status_id'] = 2;
-        elseif ($serviceProvider['account_status_id'] == 2) $serviceProvider['account_status_id'] = 1;
+        $provider = ServiceProvider::where('user_id' ,Auth::user()->id);
 
-        $serviceProvider->update();
-        return response()->json(['message' =>  $serviceProvider->account_status->title]);
+        if ($request->city_id != null)
+            $provider->update([
+                'city_id' => $request->city_id
+            ]);
+        if ($request->account_status_id != null &&
+                ( $request->account_status_id == 1 || $request->account_status_id == 2 ))
+            $provider->update([
+                'account_status_id' => $request->account_status_id
+            ]);
+
+        return response()->json(['message' =>  'تمت عملية التعديل بنجاح']);
+    }
+
+    public function getActivity()
+    {
+
+        $provider = ServiceProvider::with('city' ,'account_status')->where('user_id' ,Auth::user()->id)->first();
+        $res = (object) [
+            'city' => $provider->city->name ,
+            'account_status' => $provider->account_status->title
+        ];
+
+        return response()->json(['message' =>  'تمت عملية التعديل بنجاح' ,'data' => $res]);
     }
 
 }
