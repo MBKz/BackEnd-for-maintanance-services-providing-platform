@@ -2,16 +2,17 @@
 
 namespace App\Notifications;
 
+use http\Env\Response;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class MailNotification extends Notification
 {
-    
+
     use Queueable;
     private $arr;
- 
+
     /**
      * Create a new notification instance.
      *
@@ -21,7 +22,7 @@ class MailNotification extends Notification
     {
         $this->arr = $arr;
     }
- 
+
     /**
      * Get the notification's delivery channels.
      *
@@ -32,7 +33,7 @@ class MailNotification extends Notification
     {
         return ['mail'];
     }
- 
+
     /**
      * Get the mail representation of the notification.
      *
@@ -41,15 +42,15 @@ class MailNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)                    
+        return (new MailMessage)
             ->greeting($this->arr['title'])
-            ->from('mohamadtumeh123123@gmail.com')
-            ->subject('Khalea-Alena')
+            ->from(config('mail.mailers.smtp.username'))
+            ->subject('Account verification')
             ->line($this->arr['body'])
             ->line($this->arr['code'])
             ->salutation($this->arr['lastLine']);
     }
- 
+
     /**
      * Get the array representation of the notification.
      *
@@ -59,7 +60,7 @@ class MailNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-         
+
         ];
 }
 

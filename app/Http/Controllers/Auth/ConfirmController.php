@@ -25,7 +25,7 @@ class ConfirmController extends Controller
         $random = rand(100000, 999999);
         $arr = [
             'title'    => 'أهلا بكم في عائلة خليها علينا',
-            'body'     => 'الرجاء إدخال رمز التحقق في المكان المخصص له في التطبيق',
+            'body'     => 'رمز التحقق هو',
             'code'     =>  $random,
             'lastLine' => 'وشكرا'
         ];
