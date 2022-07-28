@@ -16,7 +16,7 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client','proposal')
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client','proposal.service_provider')
             ->where('client_id', $client->id)
             ->get();
 

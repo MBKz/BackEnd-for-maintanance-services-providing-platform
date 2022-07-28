@@ -19,7 +19,9 @@ class PostController extends Controller implements PostInterface
     public function provider_info($id)
     {
 
-        $povider  = ServiceProvider::with('user' ,'post' ,'post.posts_gallery')->get();
+        $povider  = ServiceProvider::with('user', 'post', 'post.posts_gallery')
+            ->where('id', $id)
+            ->get();
 
         return response()->json([
             "message" => "معلومات المزود",
@@ -108,7 +110,7 @@ class PostController extends Controller implements PostInterface
     public function destroy($id)
     {
 
-        $post = Post::with('posts_gallery')->firstWhere('id' ,$id);
+        $post = Post::with('posts_gallery')->firstWhere('id', $id);
         if ($post == null) {
             return response()->json([
                 "message" => "غير موجود"
@@ -116,7 +118,7 @@ class PostController extends Controller implements PostInterface
         }
 
         $photos = $post->posts_gallery;
-        foreach ($photos as $photo){
+        foreach ($photos as $photo) {
             $photo->delete();
         }
         $post->delete();
