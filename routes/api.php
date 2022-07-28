@@ -79,6 +79,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Admin Api
         Route::group(['middleware' => 'admin'], function () {
 
+            // Backup
+            Route::post('backup', [FaqController::class, 'backup']);
+
             // profile
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
