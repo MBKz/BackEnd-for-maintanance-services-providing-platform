@@ -11,6 +11,7 @@
         "laravel/passport": "^10.4",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "spatie/db-dumper": "^3.2",
         "spatie/laravel-backup": "^8.1"
     },
     "require-dev": {

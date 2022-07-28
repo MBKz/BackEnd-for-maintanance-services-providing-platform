@@ -8,6 +8,7 @@ use App\Models\Faq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Process\Process;
 
 class FaqController extends Controller implements FAQInterface
 {
@@ -78,8 +79,10 @@ class FaqController extends Controller implements FAQInterface
 
     public function backup(){
 
-        $result = Artisan::call('backup:run');
-        if($result == 1)    return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى']);
-        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح']);
+        $result = Artisan::queue('backup:run');
+        $output = Artisan::output();
+        if($result == 1)
+            return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى','date'=>now() ,'out'=>$output]);
+        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now(),'out'=>$output]);
     }
 }
