@@ -8,7 +8,7 @@ return [
          * The name of this application. You can use this name to monitor
          * the backups.
          */
-        'name' => env('APP_NAME', 'laravel-backup'),
+        'name' => env('APP_NAME' , 'laravel-backup').'-backups',
 
         'source' => [
 
@@ -29,7 +29,6 @@ return [
                 'exclude' => [
                     base_path('vendor'),
                     base_path('node_modules'),
-                    storage_path('app/backup'),
                 ],
 
                 /*
@@ -117,15 +116,14 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'backup',
-                'google'
+                'local',
             ],
         ],
 
         /*
          * The directory where the temporary files will be stored.
          */
-        'temporary_directory' => storage_path('app/backup-temp'),
+        'temporary_directory' => storage_path('app/'),
 
         /*
          * The password to be used for archive encryption.
@@ -168,10 +166,10 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'khaleaalena@gmail.com',
-            
+            'to' => 'your@example.com',
+
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'khaleaalena@gmail.com'),
+                'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
                 'name' => env('MAIL_FROM_NAME', 'Example'),
             ],
         ],
