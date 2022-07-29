@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use http\Env\Response;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;

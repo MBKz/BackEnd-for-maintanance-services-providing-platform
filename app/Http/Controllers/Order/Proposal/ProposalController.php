@@ -15,7 +15,7 @@ class ProposalController extends Controller
     {
         $user_id = auth()->user()->id;
         $service_provider = ServiceProvider::where('user_id',$user_id)->first();
-        $proposal  = Proposal::with('service_provider','initial_order','state')
+        $proposal  = Proposal::with('initial_order.city','initial_order.job','initial_order','state')
         ->where('service_provider_id',$service_provider->id)
         ->get();
 
@@ -26,7 +26,7 @@ class ProposalController extends Controller
     }
 
     public function get_all_for_client($id)
-    {        
+    {
 
         $proposals = Proposal::where('initial_order_id' ,$id)->with('state','service_provider')->get();
 
@@ -41,7 +41,7 @@ class ProposalController extends Controller
 
         $input = $request->all();
 
-        
+
         $validator = Validator::make($input, [
             'estimation_time' => 'required',
             'estimation_cost' => 'required',
@@ -68,7 +68,7 @@ class ProposalController extends Controller
 
         $proposal->initial_order()->update([
             'state_id' => 2,
-        ]); 
+        ]);
         return response()->json([
             "message" => "تم ارسال عرض الصيانة بنجاح",
             "data" => $proposal
@@ -94,5 +94,5 @@ class ProposalController extends Controller
         ]);
     }
 
-    
+
 }

@@ -5,10 +5,12 @@ namespace App\Http\Controllers\FAQ;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\FAQ\FAQInterface;
 use App\Models\Faq;
+use App\Notifications\SendPushNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\Process\Process;
 
 class FaqController extends Controller implements FAQInterface
 {
@@ -79,10 +81,15 @@ class FaqController extends Controller implements FAQInterface
 
     public function backup(){
 
-        $result = Artisan::queue('backup:run');
-        $output = Artisan::output();
-        if($result == 1)
-            return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى','date'=>now() ,'out'=>$output]);
-        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now(),'out'=>$output]);
+         Notification::send(null
+             ,new SendPushNotification('first notif'
+                 ,'some data'
+                 ,'cMqPPcdJQ3KZj3DdmSkPgs:APA91bG9jTiqGSLeB2IkqtUOFPxOTa253sKAJTAlmxKA0CKktRTqtfm7kOxJBuAFYQ8TogHOAdTMJdAqqwcAp9N6kB58MkT330UexIadkBd42_Kg568r8k34cvqqQloBjHC0u05aixUw'
+             ));
+//        $result = Artisan::call('backup:run');
+////        dd(Artisan::output());
+//        if($result == 1)
+//            return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى','date'=>now() ]);
+//        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now()]);
     }
 }

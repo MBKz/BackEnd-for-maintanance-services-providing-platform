@@ -19,6 +19,7 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\SysInfo\CompanyController;
+use App\Http\Controllers\WebNotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
