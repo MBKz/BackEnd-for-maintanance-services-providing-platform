@@ -16,7 +16,7 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client','proposal.service_provider')
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal.service_provider')
             ->where('client_id', $client->id)
             ->get();
 
@@ -31,22 +31,31 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $service_provider = ServiceProvider::where('user_id', $user_id)
-        ->where('account_status_id',1)
-        ->first();
+            ->where('account_status_id', 1)
+            ->first();
 
-        // TODO: edit here
-        $initialOrders  = (InitialOrder::leftJoin('proposals' , 'initial_order.id' , '=' ,'proposal.initial_order_id')
-            ->with('job', 'state', 'city', 'client')
-            ->where('')
-            ->where('initial_order.city_id', $service_provider->city_id)
-            ->where('initial_order.job_id',$service_provider->job_id)
-            ->where('proposal.service_provider_id',$service_provider->id)
-                )->where('initial_order.state_id',1)
-                 ->orWhere('initial_order.state_id',2)
-            ->get();
+        $init = InitialOrder::get();
+
+        foreach ($init as $inital) {
+            $initialOrders[]  = (InitialOrder::with('job', 'state', 'city', 'client')
+                ->whereHas('proposal', function ($q)  use ($inital) {
+                    $user_id = auth()->user()->id;
+                    $service_provider = ServiceProvider::where('user_id', $user_id)
+                        ->where('account_status_id', 1)
+                        ->first();
+
+                    $q->where('service_provider_id', $service_provider->id)
+                        ->where('initial_order_id', '!=', $inital->id);
+                })
+                ->where('city_id', $service_provider->city_id)
+                ->where('job_id', $service_provider->job_id)
+            )->where('state_id', 1)
+                ->orWhere('state_id', 2)
+                ->get();
+        }
 
         return response()->json([
-            "message" => "جميع الطلبات الخاصة بك",
+            "message" => "جميع الخدمات المطلوبة",
             "data" => $initialOrders
         ]);
     }
