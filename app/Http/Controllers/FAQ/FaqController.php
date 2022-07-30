@@ -81,15 +81,15 @@ class FaqController extends Controller implements FAQInterface
 
     public function backup(){
 
-         Notification::send(null
-             ,new SendPushNotification('first notif'
-                 ,'some data'
-                 ,'cMqPPcdJQ3KZj3DdmSkPgs:APA91bG9jTiqGSLeB2IkqtUOFPxOTa253sKAJTAlmxKA0CKktRTqtfm7kOxJBuAFYQ8TogHOAdTMJdAqqwcAp9N6kB58MkT330UexIadkBd42_Kg568r8k34cvqqQloBjHC0u05aixUw'
-             ));
-//        $result = Artisan::call('backup:run');
-////        dd(Artisan::output());
-//        if($result == 1)
-//            return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى','date'=>now() ]);
-//        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now()]);
+//         Notification::send(null
+//             ,new SendPushNotification('first notif'
+//                 ,'some data'
+//                 ,'cMqPPcdJQ3KZj3DdmSkPgs:APA91bG9jTiqGSLeB2IkqtUOFPxOTa253sKAJTAlmxKA0CKktRTqtfm7kOxJBuAFYQ8TogHOAdTMJdAqqwcAp9N6kB58MkT330UexIadkBd42_Kg568r8k34cvqqQloBjHC0u05aixUw'
+//             ));
+        $result = Artisan::call('backup:run');
+//        dd(Artisan::output());
+        if($result == 1)
+            return response(['message'=>'فشلت عملية النسخ الاحتياطي , الرجاء المحاولة مرة أخرى','date'=>now() ]);
+        return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now()]);
     }
 }

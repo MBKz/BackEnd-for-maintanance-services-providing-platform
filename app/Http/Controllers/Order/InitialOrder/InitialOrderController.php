@@ -33,10 +33,16 @@ class InitialOrderController extends Controller
         $service_provider = ServiceProvider::where('user_id', $user_id)
         ->where('account_status_id',1)
         ->first();
-        
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client')
-            ->where('city_id', $service_provider->city_id)
-            ->where('job_id',$service_provider->job_id)
+
+        // TODO: edit here
+        $initialOrders  = (InitialOrder::leftJoin('proposals' , 'initial_order.id' , '=' ,'proposal.initial_order_id')
+            ->with('job', 'state', 'city', 'client')
+            ->where('')
+            ->where('initial_order.city_id', $service_provider->city_id)
+            ->where('initial_order.job_id',$service_provider->job_id)
+            ->where('proposal.service_provider_id',$service_provider->id)
+                )->where('initial_order.state_id',1)
+                 ->orWhere('initial_order.state_id',2)
             ->get();
 
         return response()->json([
