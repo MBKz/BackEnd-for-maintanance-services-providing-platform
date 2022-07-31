@@ -157,7 +157,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             // TODO: notification test
             Route::post('notificationTest',function (){
                 $client = \App\Models\Client::where('user_id' ,1)->first();
-                return $client->notify(new SendPushNotification('first test', 'getting help from emad'));
+                return $client->notify(new SendPushNotification('first api test', 'is it working ?'));
             });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);

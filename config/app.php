@@ -186,6 +186,8 @@ return [
          * Package Service Providers...
          */
 
+        Benwilkins\FCM\FcmNotificationServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
