@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,25 +35,22 @@ class InitialOrderController extends Controller
             ->where('account_status_id', 1)
             ->first();
 
-        $init = InitialOrder::get();
+        $initialOrders = InitialOrder::with('job', 'state', 'city', 'client')
+            ->select('*')
+            ->where('city_id', '=', $service_provider->city_id)
+            ->where('job_id', '=', $service_provider->job_id)
+            ->where(function ($query) {
+                $query->where('initial_orders.state_id', '=', 1)
+                    ->orWhere('initial_orders.state_id', '=', 2);
+            })
+            ->whereNotIn('id', (function ($query) use ($service_provider) {
 
-        foreach ($init as $inital) {
-            $initialOrders[]  = (InitialOrder::with('job', 'state', 'city', 'client')
-                ->whereHas('proposal', function ($q)  use ($inital) {
-                    $user_id = auth()->user()->id;
-                    $service_provider = ServiceProvider::where('user_id', $user_id)
-                        ->where('account_status_id', 1)
-                        ->first();
+                $query->from('proposals')
+                    ->select('initial_order_id')
+                    ->where('service_provider_id', '=', $service_provider->id);
+            }))
+            ->get();
 
-                    $q->where('service_provider_id', $service_provider->id)
-                        ->where('initial_order_id', '!=', $inital->id);
-                })
-                ->where('city_id', $service_provider->city_id)
-                ->where('job_id', $service_provider->job_id)
-            )->where('state_id', 1)
-                ->orWhere('state_id', 2)
-                ->get();
-        }
 
         return response()->json([
             "message" => "جميع الخدمات المطلوبة",
