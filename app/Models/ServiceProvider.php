@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class ServiceProvider extends Model
 {
-    use HasFactory;
+    use HasFactory ,Notifiable;
 
     public $timestamps = false;
 
@@ -17,11 +18,15 @@ class ServiceProvider extends Model
     ];
 
 
+    public function routeNotificationForFcm($notification)
+    {
+        return $this->device_token;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function account_status()
     {

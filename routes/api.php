@@ -19,7 +19,7 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\SysInfo\CompanyController;
-use App\Http\Controllers\WebNotificationController;
+use App\Notifications\SendPushNotification;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -152,6 +152,13 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
         // Client Api
         Route::group(['middleware' => 'client'], function () {
+
+
+            // TODO: notification test
+            Route::post('notificationTest',function (){
+                $client = \App\Models\Client::where('user_id' ,1)->first();
+                return $client->notify(new SendPushNotification('first test', 'getting help from emad'));
+            });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
 
