@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Posts\PostInterface;
 use App\Models\Client;
 use App\Models\Post;
-use App\Models\PostsGallery;
 use App\Models\ServiceProvider;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -49,37 +48,18 @@ class PostController extends Controller implements PostInterface
             'date' => $request->date,
         ]);
 
+        $upload = new HelperController();
 
-        //TODO: upload func
         $images = $request->image;
         if ($request->image != null) {
-            $echImages[count($images)] = null;
 
             for ($i = 0; $i < count($images); $i++) {
-                if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-                    $filename = time() . $image[$i]->getClientOriginalName();
-                    Storage::disk('public')->putFileAs(
-                        'ServiceProvider/Posts',
-                        $image[$i],
-                        $filename
-                    );
-                    $image[$i] = $request->image = url('/') . '/storage/' . 'ServiceProvider' . '/' . 'Posts' . '/' . $filename;
-                    $echImages[$i] = $image[$i];
-                } else {
-                    $image[$i] = null;
-                }
-            }
 
-
-
-
-
-            for ($i = 0; $i < count($image); $i++) {
+                $image =  $upload->upload_array_of_images_localy($request, 'image', 'ServiceProvider/Posts/', $i);
 
                 $post->posts_gallery()->create([
                     'title' => $request->title,
-                    'image' => $echImages[$i],
+                    'image' => $image,
                 ]);
             }
         }

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Order\InitialOrder;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Models\Client;
 use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class InitialOrderController extends Controller
@@ -94,32 +93,18 @@ class InitialOrderController extends Controller
 
 
 
+        $upload = new HelperController();
+
         $images = $request->image;
         if ($request->image != null) {
-            $echImages[count($images)] = null;
-
 
             for ($i = 0; $i < count($images); $i++) {
-                if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-                    $filename = time() . $image[$i]->getClientOriginalName();
-                    Storage::disk('public')->putFileAs(
-                        'initialOrder',
-                        $image[$i],
-                        $filename
-                    );
-                    $image[$i] = $request->image = url('/') . '/storage/' . 'initialOrder' . '/' . $filename;
-                    $echImages[$i] = $image[$i];
-                } else {
-                    $image[$i] = null;
-                }
-            }
-
-            for ($i = 0; $i < count($image); $i++) {
+                
+                $image =  $upload->upload_array_of_images_localy($request, 'image', 'initialOrder/', $i);
 
                 $initialOrder->order_gallery()->create([
                     'title' => $request->title,
-                    'image' => $echImages[$i],
+                    'image' => $image,
                     'initial_order_id' => $initialOrder->id
                 ]);
             }

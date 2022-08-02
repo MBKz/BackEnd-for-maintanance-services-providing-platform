@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Auth\RegisterInterface;
-use App\Models\Client;
 use App\Models\Identity;
-use App\Models\ServiceProvider;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller implements RegisterInterface
@@ -36,18 +34,8 @@ class RegisterController extends Controller implements RegisterInterface
             return response()->json(['error' => $validator->errors()], 401);
         }
 
-        //TODO: make function for uploading
-        if ($request->hasFile('image') && ($request->hasFile('image')) != null) {
-            $image = $request->file('image');
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'UserPhoto/ServiceProviderProfile/IdentityPhoto',
-                $image,
-                $filename
-            );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ServiceProviderProfile' . '/' . 'IdentityPhoto' . '/' . $filename;
-        } else
-            $image = null;
+        $upload = new HelperController();
+        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ServiceProviderProfile/IdentityPhoto/');
 
         $identity = Identity::create([
             'number' => $request->number,
@@ -77,8 +65,6 @@ class RegisterController extends Controller implements RegisterInterface
         ]);
     }
 
-
-
     public function registerClient(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -106,12 +92,11 @@ class RegisterController extends Controller implements RegisterInterface
             'gender' => $request->gender,
         ]);
 
-
         $user->client()->create();
 
 
-            return response([
-                'message' =>  'تمت عملية تسجيل الحساب بنجاح .'
-            ]);
+        return response([
+            'message' =>  'تمت عملية تسجيل الحساب بنجاح .'
+        ]);
     }
 }

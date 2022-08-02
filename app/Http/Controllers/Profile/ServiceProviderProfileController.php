@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Profile\ProfileInterface;
 use App\Models\ServiceProvider;
 use Illuminate\Http\Request;
@@ -34,17 +35,9 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'UserPhoto/ServiceProviderProfile',
-                $image,
-                $filename
-            );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ServiceProviderProfile' . '/' . $filename;
-        }
-
+        $upload = new HelperController();
+        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ServiceProviderProfile/');
+        
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
         if ($request->image != null)       $user['image'] = $image;

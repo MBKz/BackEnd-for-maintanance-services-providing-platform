@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Profile\ProfileInterface;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -35,17 +36,8 @@ class ClientProfileController extends Controller implements ProfileInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        //TODO: upload func
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'UserPhoto/ClientProfile',
-                $image,
-                $filename
-            );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ClientProfile' . '/' . $filename;
-        }
+        $upload = new HelperController();
+        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ClientProfile/');
 
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;

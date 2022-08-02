@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Helper;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Helper\JobInterface;
 use App\Models\Job;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-
 
 class JobController extends Controller implements JobInterface
 {
-
-  // TODO: upload func
 
     public function get_all()
     {
@@ -36,32 +33,10 @@ class JobController extends Controller implements JobInterface
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
-
-        // TODO: upload func
-        if ($request->hasFile('icon') && ($request->hasFile('icon')) != null) {
-            $icon = $request->file('icon');
-            $filename = time() . $icon->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'Job/icon',
-                $icon,
-                $filename
-            );
-            $icon = $request->icon = url('/') . '/storage/' . 'Job' .'/' . 'icon' . '/' . $filename;
-        } else
-            $icon = null;
-
-            if ($request->hasFile('image') && ($request->hasFile('image')) != null) {
-                $image = $request->file('image');
-                $filename = time() . $image->getClientOriginalName();
-                Storage::disk('public')->putFileAs(
-                    'Job/image',
-                    $image,
-                    $filename
-                );
-                $image = $request->image = url('/') . '/storage/' . 'Job' . '/' . 'image' . '/' . $filename;
-            } else
-                $image = null;
-
+        
+       $upload = new HelperController();
+       $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
+       $image =  $upload->upload_image_localy($request,'image','Job/image/');
 
         $job = Job::create([
             'title' => $request->title,
@@ -102,31 +77,10 @@ class JobController extends Controller implements JobInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        // TODO: upload func
-        if ($request->hasFile('icon')) {
-            $icon = $request->file('icon');
-            $filename = time() . $icon->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'Job/icon',
-                $icon,
-                $filename
-            );
-            $icon = $request->icon = url('/') . '/storage/' . 'Job' .'/' . 'icon' . '/' . $filename;
-        } else
-            $icon = null;
-
-            if ($request->hasFile('image') && ($request->hasFile('image')) != null) {
-                $image = $request->file('image');
-                $filename = time() . $image->getClientOriginalName();
-                Storage::disk('public')->putFileAs(
-                    'Job/image',
-                    $image,
-                    $filename
-                );
-                $image = $request->image = url('/') . '/storage/' . 'Job' . '/' . 'image' . '/' . $filename;
-            } else
-                $image = null;
-
+        $upload = new HelperController();
+        $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
+        $image =  $upload->upload_image_localy($request,'image','Job/image/');
+        
         if ($request->title != null)  $job['title'] = $request->title;
         if ($request->description != null)   $job['description'] = $request->description;
         if ($request->icon != null)       $job['icon'] = $icon;
