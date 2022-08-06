@@ -12,7 +12,7 @@ use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
 use App\Http\Controllers\Actors\ServiceProviderController;
 use App\Http\Controllers\Auth\ConfirmController;
-use App\Http\Controllers\FAQ\FaqController;
+use App\Http\Controllers\adminFunctions\adminFunctionsController;
 use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\Proposal\ProposalController;
@@ -54,7 +54,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
     Route::get('company/get-all', [CompanyController::class, 'get_all']);
 
-    Route::get('FAQ/get-all', [FaqController::class, 'get_all']);
+    Route::get('FAQ/get-all', [adminFunctionsController::class, 'get_all']);
 
     // Needs Auth
     Route::group(['middleware' => 'auth:api'], function () {
@@ -64,7 +64,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
 
         Route::post('user/logout', [LogoutController::class, 'logout']);
-        Route::post('FAQ/add/question', [FaqController::class, 'AddQuestion']);
+        Route::post('FAQ/add/question', [adminFunctionsController::class, 'AddQuestion']);
 
         // Super Admin
         Route::group(['middleware' => 'superAdmin'], function () {
@@ -76,8 +76,10 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Admin
         Route::group(['middleware' => 'admin'], function () {
 
-            // Backup
-            Route::post('backup', [FaqController::class, 'backup']);
+            // Backup & statistics
+            Route::post('backup', [adminFunctionsController::class, 'backup']);
+            Route::get('statistics', [adminFunctionsController::class, 'statistics']);
+
 
             // profile
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
@@ -85,7 +87,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
             // clients & FAQ
             Route::get('client/get-all', [ClientController::class, 'get_all']);
-            Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
+            Route::post('FAQ/add/answer/{id}', [adminFunctionsController::class, 'AddAnswer']);
 
             // job
             Route::post('job/add', [JobController::class, 'store']);
@@ -133,7 +135,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('post/profile', [PostController::class, 'show']);
 
 
-            // oredr
+            // order
             Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
 
             Route::post('proposal/add', [ProposalController::class, 'store']);

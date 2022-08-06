@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Order\InitialOrder;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Models\Client;
 use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
+use App\Models\User;
 use App\Notifications\SendPushNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -60,9 +63,7 @@ class InitialOrderController extends Controller
     public function store(Request $request)
     {
 
-        $input = $request->all();
-
-        $validator = Validator::make($input, [
+        $validator = Validator::make($request->all(), [
             'description' => 'required',
             'location' => 'required',
             'latitude' => 'required',
@@ -90,7 +91,6 @@ class InitialOrderController extends Controller
             'city_id' => $request->city_id,
             'client_id' => $client_id->id,
         ]);
-
 
 
         // image process

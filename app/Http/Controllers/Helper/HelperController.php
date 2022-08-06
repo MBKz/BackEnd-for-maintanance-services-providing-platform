@@ -36,4 +36,8 @@ class HelperController {
         } else
         return   $image = null;
     }
+
+    public static function notify(){
+
+    }
 }
