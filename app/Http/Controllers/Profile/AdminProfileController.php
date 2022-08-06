@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Profile\ProfileInterface;
 use App\Models\Admin;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class AdminProfileController extends Controller implements ProfileInterface
         return response()->json(['message' =>  'المعلومات الشخصية','data' => $admin]);
     }
 
-    //TODO: upload func
+  
     public function editProfile(Request $request)
     {
 
@@ -34,16 +35,9 @@ class AdminProfileController extends Controller implements ProfileInterface
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()->all()], 422);
         }
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'UserPhoto/AdminProfile',
-                $image,
-                $filename
-            );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'AdminProfile' . '/' . $filename;
-        }
+
+        $upload = new HelperController();
+        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/AdminProfile/');
 
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
