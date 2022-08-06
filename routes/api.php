@@ -3,7 +3,6 @@
 use App\Http\Controllers\Actors\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Helper\AccountStatusController;
 use App\Http\Controllers\Helper\CityController;
 use App\Http\Controllers\Helper\JobController;
 use App\Http\Controllers\Actors\ClientController;
@@ -20,7 +19,6 @@ use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use App\Notifications\SendPushNotification;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,11 +31,9 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// TODO:json.response
 Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
     // Register
-    //TODO: make function for uploading
     Route::post('serviceProvider/register', [RegisterController::class, 'registerServiceProvider']);
     Route::post('client/register', [RegisterController::class, 'registerClient']);
 
@@ -48,7 +44,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
     Route::post('admin/login', [LoginController::class, 'loginAdmin']);
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
     Route::post('client/login', [LoginController::class, 'loginClient']);
-
 
     // Available for Visitors
     Route::get('job/get/{id}', [JobController::class, 'show']);
@@ -78,7 +73,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::delete('admin/delete/{id}', [AdminController::class, 'destroy']);
         });
 
-        // Admin Api
+        // Admin
         Route::group(['middleware' => 'admin'], function () {
 
             // Backup
@@ -88,10 +83,9 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
 
-            // clients & FAQ & accountStatus
+            // clients & FAQ
             Route::get('client/get-all', [ClientController::class, 'get_all']);
             Route::post('FAQ/add/answer/{id}', [FaqController::class, 'AddAnswer']);
-            Route::get('accountStatus/get-all', [AccountStatusController::class, 'get_all']);
 
             // job
             Route::post('job/add', [JobController::class, 'store']);
@@ -125,6 +119,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // ServiceProvider Api
         Route::group(['middleware' => 'serviceProvider'], function () {
 
+            // profile
             Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
 
             //  availability and activity
@@ -138,6 +133,7 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('post/profile', [PostController::class, 'show']);
 
 
+            // oredr
             Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
 
             Route::post('proposal/add', [ProposalController::class, 'store']);
@@ -154,20 +150,11 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Client Api
         Route::group(['middleware' => 'client'], function () {
 
-
-            // TODO: notification test
             Route::post('notificationTest',function (){
                 $client = \App\Models\Client::where('user_id' ,1)->first();
-                $message = 'is it working ?';
-                $title = 'first api test';
-                $client->notify(new SendPushNotification( $title,$message ));
-                $user = \App\Models\User::find(1);
-                return $user->notifications()->create([
-                    'message' => $title,
-                    'body' => $message,
-                    'checked' => false,
-                    'date' => Carbon::now()
-                ]);
+                $message = 'test the body ...';
+                $title = 'test title' ;
+                $client->notify(new SendPushNotification( $title,$message,'test tag' ));
             });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
@@ -188,20 +175,5 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
         });
 
-
-        // ال API  المشتركين بين أكثر من نوع
-
-        // Admin And Provider Api
-        Route::group(['middleware' => 'provider.admin'], function () {
-        });
-
-        // Provider And Client Api
-        Route::group(['middleware' => 'provider.client'], function () {
-
-        });
-
-        // Admin And Client Api
-        Route::group(['middleware' => 'client.admin'], function () {
-        });
     });
 });

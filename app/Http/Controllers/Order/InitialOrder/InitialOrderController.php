@@ -16,7 +16,7 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal.service_provider')
+        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal')
             ->where('client_id', $client->id)
             ->get();
 
@@ -121,8 +121,8 @@ class InitialOrderController extends Controller
             ->where('device_token' ,'!=', null)
             ->get();
 
-        $message = 'Someone needs your help ,checkout the request'.$initialOrder->id;
-        $title = 'Ready for work!' ;
+        $message = $initialOrder->id.'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز !';
+        $title = 'جاهز للعمل ؟' ;
         foreach ($providers as $provider){
             $provider->notify(new SendPushNotification($title,$message,'order request'));
             $user= User::find($provider->user_id);

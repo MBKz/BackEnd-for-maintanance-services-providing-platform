@@ -22,7 +22,7 @@ class Client
         $user_id = Auth::user()->id;
         $client = ModelsClient::where('user_id', $user_id)->first();
         if ($client == null) {
-            return response(['errors'=>'عذرا لا تملك صلاحية'], 400);
+            return response(['errors'=>'عذرا لا تملك صلاحية'], 403);
      }
 
         return $next($request);

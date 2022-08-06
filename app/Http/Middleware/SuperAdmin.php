@@ -23,6 +23,6 @@ class SuperAdmin
         if($admin != null && $admin->role_id == 1){
             return $next($request);
         }
-        return response(['errors'=>'عذرا صلاحيات غير متاحة'], 400);
+        return response(['errors'=>'عذرا صلاحيات غير متاحة'], 403);
     }
 }
