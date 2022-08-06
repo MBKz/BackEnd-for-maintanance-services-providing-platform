@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Order\InitialOrder;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use  App\Models\User;
 use App\Models\InitialOrder;
 use App\Models\ServiceProvider;
+use App\Notifications\SendPushNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -94,11 +96,11 @@ class InitialOrderController extends Controller
 
 
 
+        // image process
         $images = $request->image;
         if ($request->image != null) {
+
             $echImages[count($images)] = null;
-
-
             for ($i = 0; $i < count($images); $i++) {
                 if ($request->hasFile('image')) {
                     $image = $request->file('image');
@@ -114,15 +116,35 @@ class InitialOrderController extends Controller
                     $image[$i] = null;
                 }
             }
-
             for ($i = 0; $i < count($image); $i++) {
-
                 $initialOrder->order_gallery()->create([
                     'title' => $request->title,
                     'image' => $echImages[$i],
                     'initial_order_id' => $initialOrder->id
                 ]);
             }
+        }
+
+        // notify all related service provider
+        //TODO: test
+        $providers = ServiceProvider::select('id','user_id','device_token')
+            ->where('city_id' ,$initialOrder->city_id)
+            ->where('job_id' ,$initialOrder->job_id)
+            ->where('account_status_id' ,1)
+            ->where('device_token' ,'!=', null)
+            ->get();
+
+        $message = 'Someone needs your help ,checkout the request'.$initialOrder->id;
+        $title = 'Ready for work!' ;
+        foreach ($providers as $provider){
+            $provider->notify(new SendPushNotification($title,$message,'order request'));
+            $user= User::find($provider->user_id);
+            $user->notifications()->create([
+                'message' => $title,
+                'body' => $message,
+                'checked' => false,
+                'date' => Carbon::now()->addHour(3)
+            ]);
         }
 
         return response()->json([

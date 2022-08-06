@@ -11,7 +11,10 @@ class Notification extends Model
 
     public $timestamps = false;
 
+    // TODO: ??
     protected $table = 'notifications';
+
+    protected $guarded = [];
 
     public function user()
     {

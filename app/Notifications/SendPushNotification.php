@@ -12,16 +12,18 @@ class SendPushNotification extends Notification implements ShouldQueue
 
     protected $title;
     protected $message;
+    protected $tag;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($title,$message)
+    public function __construct($title,$message,$tag=null)
     {
         $this->title = $title;
         $this->message = $message;
+        $this->tag = $tag;
     }
 
     /**
@@ -41,6 +43,7 @@ class SendPushNotification extends Notification implements ShouldQueue
         $message->content([
             'title'        => $this->title,
             'body'         => $this->message,
+            'tag'          => $this->tag
         ])->priority(FcmMessage::PRIORITY_HIGH);
 
         return $message;

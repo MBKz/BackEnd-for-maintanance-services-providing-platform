@@ -20,6 +20,7 @@ use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use App\Notifications\SendPushNotification;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -157,7 +158,16 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             // TODO: notification test
             Route::post('notificationTest',function (){
                 $client = \App\Models\Client::where('user_id' ,1)->first();
-                return $client->notify(new SendPushNotification('first api test', 'is it working ?'));
+                $message = 'is it working ?';
+                $title = 'first api test';
+                $client->notify(new SendPushNotification( $title,$message ));
+                $user = \App\Models\User::find(1);
+                return $user->notifications()->create([
+                    'message' => $title,
+                    'body' => $message,
+                    'checked' => false,
+                    'date' => Carbon::now()
+                ]);
             });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
