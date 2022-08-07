@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Order\Proposal;
 use App\Http\Controllers\Controller;
 use App\Models\Proposal;
 use App\Models\ServiceProvider;
+use \App\Models\Client;
+use App\Models\User;
+use App\Notifications\SendPushNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,7 +33,7 @@ class ProposalController extends Controller
     public function get_all_for_client($id)
     {
 
-        $proposals = Proposal::where('initial_order_id' ,$id)->with('state','service_provider')->get();
+        $proposals = Proposal::where('initial_order_id' ,$id)->with('state')->get();
 
         return response()->json([
             "message" => "جميع الطلبات الخاصة بك",
@@ -37,13 +41,11 @@ class ProposalController extends Controller
         ]);
     }
 
+    // TODO:notify
     public function store(Request $request)
     {
 
-        $input = $request->all();
-
-
-        $validator = Validator::make($input, [
+        $validator = Validator::make($request->all(), [
             'estimation_time' => 'required',
             'estimation_cost' => 'required',
             'date' => 'required',
@@ -51,7 +53,7 @@ class ProposalController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['errors' => $validator->errors()->all()], 400);
         }
 
         $user_id = auth()->user()->id;
@@ -70,6 +72,19 @@ class ProposalController extends Controller
         $proposal->initial_order()->update([
             'state_id' => 2,
         ]);
+
+        // TODO:notify
+        $message = 'لديك عرض صيانة جديد بمعرف #'.$proposal->id.' من أجل الطلب ذو المعرف #'.$proposal->initial_order_id ;
+        $client = Client::where('id',$proposal->initial_order->client_id)->first();
+        $client->notify(new SendPushNotification(' عرض صيانة',$message,'proposal'));
+        $user= User::find($client->user_id);
+        $user->notifications()->create([
+            'message' => ' عرض صيانة',
+            'body' => $message,
+            'checked' => false,
+            'date' => Carbon::now()->addHour(3)
+        ]);
+
         return response()->json([
             "message" => "تم ارسال عرض الصيانة بنجاح",
             "data" => $proposal
@@ -86,10 +101,10 @@ class ProposalController extends Controller
                 "error" => "هذا الطلب غير موجود"
             ], 404);
         }
+
         $proposal->delete();
 
         return response()->json([
-            "success" => true,
             "message" => "تم حذف هذا العرض بنجاح",
             "data" => $proposal
         ]);

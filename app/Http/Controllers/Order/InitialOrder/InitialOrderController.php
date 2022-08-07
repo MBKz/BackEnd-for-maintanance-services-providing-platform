@@ -30,7 +30,6 @@ class InitialOrderController extends Controller
         ]);
     }
 
-
     public function get_all_for_provider()
     {
         $user_id = auth()->user()->id;
@@ -38,7 +37,7 @@ class InitialOrderController extends Controller
             ->where('account_status_id', 1)
             ->first();
 
-        $initialOrders = InitialOrder::with('job', 'state', 'city', 'client')
+        $initialOrders = InitialOrder::with('job', 'state', 'city')
             ->select('*')
             ->where('city_id', '=', $service_provider->city_id)
             ->where('job_id', '=', $service_provider->job_id)
@@ -71,7 +70,7 @@ class InitialOrderController extends Controller
             'longitude' => 'required',
             'job_id' => 'required',
             'city_id' => 'required',
-            'image[]' => 'array|image|mimes:jpg,png,jpeg,gif,svg',
+            'image[]' => 'array|image|mimes:jpg,png,jpeg,gif,svg,bmp',
         ]);
 
         if ($validator->fails()) {
@@ -99,12 +98,9 @@ class InitialOrderController extends Controller
 
         $images = $request->image;
         if ($request->image != null) {
-
             $echImages[count($images)] = null;
             for ($i = 0; $i < count($images); $i++) {
-
                 $image =  $upload->upload_array_of_images_localy($request, 'image', 'initialOrder/', $i);
-
                 $initialOrder->order_gallery()->create([
                     'title' => $request->title,
                     'image' => $image,
@@ -122,6 +118,7 @@ class InitialOrderController extends Controller
             ->where('device_token' ,'!=', null)
             ->get();
 
+        // TODO:notify
         $message = $initialOrder->id.'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز !';
         $title = 'جاهز للعمل ؟' ;
         foreach ($providers as $provider){
@@ -154,7 +151,6 @@ class InitialOrderController extends Controller
         $initalOrder->delete();
 
         return response()->json([
-            "success" => true,
             "message" => "تم حذف هذا الطلب بنجاح",
             "data" => $initalOrder
         ]);

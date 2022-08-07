@@ -8,27 +8,36 @@ use App\Models\InitialOrder;
 use App\Models\Order;
 use App\Models\Proposal;
 use App\Models\ServiceProvider;
+use App\Models\User;
+use App\Notifications\SendPushNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+
+    // TODO:notify
+    // client
     public function order_confirm($id)
     {
-        $order = Order::create([
+        $proposal = Proposal::where('id', $id)->with('order')->first();
+
+        if($proposal == null )
+            return response(['message'=>'لا يمكن تثبيت الطلب' ],404);
+
+        $proposal->order()->create([
             'proposal_id' => $id,
             'state_id' => 1,
         ]);
 
-        $order->proposal()->update([
+        $proposal->update([
             'state_id' => 4,
         ]);
 
-        $order->proposal->initial_order()->update([
+        $proposal->initial_order()->update([
             'state_id' => 4,
         ]);
-
-        $proposal = Proposal::where('id', $id)->first();
 
         $proposals = Proposal::where('initial_order_id', $proposal->initial_order_id)->get();
 
@@ -37,81 +46,32 @@ class OrderController extends Controller
                 $one->delete();
         }
 
-        return response()->json([
-            "message" => "تم تأكيد الطلب",
-            "data" => $order
+        // TODO:notify
+        $message = 'تم قبول عرض الصيانة ذو المعرف #'.$proposal->id.' الذي قدمته من أجل الخدمة ذو المعرف #'.$proposal->initial_order_id ;
+        $provider = ServiceProvider::where('id',$proposal->service_provider_id)->first();
+        $provider->notify(new SendPushNotification('أصبح لديك طلب حالي لإنجازه',$message,'order'));
+        $user= User::find($provider->user_id);
+        $user->notifications()->create([
+            'message' => 'أصبح لديك طلب حالي لإنجازه',
+            'body' => $message,
+            'checked' => false,
+            'date' => Carbon::now()->addHour(3)
         ]);
-    }
-
-    public function order_start($id)
-    {
-        $order = Order::find($id);
-
-        $order['start_date'] = now();
-        $order['state_id'] = 3;
-
-        $order->update();
-
-        $order->proposal()->update([
-            'state_id' => 3,
-        ]);
-
-        return response()->json([
-            "message" => "تم بدء العمل",
-            "data" => $order
-        ]);
-    }
-
-    public function order_end(Request $request, $id)
-    {
-        $order = Order::find($id);
-
-        $validator = Validator::make($request->all(), ['cost' => 'required']);
-
-        if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
-        }
-
-        $order['end_date'] = now();
-        $order['state_id'] = 4;
-        $order['cost'] = $request->cost;
-
-        $order->update();
-
-        $order->proposal()->update([
-            'state_id' => 4,
-        ]);
-
 
 
         return response()->json([
-            "message" => "تم انهاء العمل",
-            "data" => $order
+            "message" => "تم تأكيد الطلب",
         ]);
     }
 
     public function order_current_for_client()
     {
 
-        $osrderCurrent = Order::whereHas('proposal.initial_order', function ($q) {
-            $user_id = auth()->user()->id;
-            $client = Client::where('user_id', $user_id)->first();
+        $client = Client::where('user_id', auth()->user()->id)->first();
+
+        $osrderCurrent = Order::with('review','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
+        ->whereHas('proposal.initial_order', function ($q) use($client) {
             $q->where('client_id', $client->id);
-        })->where('state_id', 1)->orWhere('state_id', '3')->get();
-
-        return response()->json([
-            "message" => "طلباتي الحالية",
-            "data" => $osrderCurrent
-        ]);
-    }
-
-    public function order_current_for_provider()
-    {
-
-        $osrderCurrent = Order::whereHas('proposal', function ($q) {
-            $user_id = auth()->user()->id;
-            $service_provider = ServiceProvider::where('user_id', $user_id)->first();
-            $q->where('service_provider_id', $service_provider->id);
         })->where('state_id', 1)->orWhere('state_id', 3)->get();
 
         return response()->json([
@@ -122,13 +82,12 @@ class OrderController extends Controller
 
     public function order_history_for_client()
     {
+        $client = Client::where('user_id', auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('proposal','proposal.initial_order')->whereHas('proposal.initial_order', function ($q) {
-            $user_id = auth()->user()->id;
-            $client = Client::where('user_id', $user_id)->first();
-            $q->where('client_id', $client->id);
-        })
-        ->where('state_id', 4)->get();
+        $osrderCurrent = Order::with('review','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
+            ->whereHas('proposal.initial_order', function ($q) use ($client){
+                $q->where('client_id', $client->id);
+            })->where('state_id', 4)->get();
 
         return response()->json([
             "message" => "طلباتي المنجزة",
@@ -136,12 +95,67 @@ class OrderController extends Controller
         ]);
     }
 
-    public function order_history_for_provider()
+    // provider
+    public function order_current_for_provider()
     {
 
-        $osrderCurrent = Order::whereHas('proposal', function ($q) {
-            $user_id = auth()->user()->id;
-            $service_provider = ServiceProvider::where('user_id', $user_id)->first();
+        $service_provider = ServiceProvider::where('user_id', auth()->user()->id)->first();
+
+        $osrderCurrent = Order::with('review','proposal.initial_order.client.user','proposal.initial_order.city','proposal.initial_order.job')
+        ->whereHas('proposal', function ($q) use($service_provider) {
+            $q->where('service_provider_id', $service_provider->id);
+        })->where('state_id', 1)->orWhere('state_id', 3)->get();
+
+        return response()->json([
+            "message" => "طلباتي الحالية",
+            "data" => $osrderCurrent
+        ]);
+    }
+
+    public function order_start($id)
+    {
+        $order = Order::find($id);
+
+        $order->update([
+            'start_date' => now()->addHour(3),
+            'state_id' => 3
+        ]);
+
+        return response()->json([
+            "message" => "تم بدء العمل",
+            "data" => $order
+        ]);
+    }
+
+    public function order_end(Request $request, $id)
+    {
+
+        $validator = Validator::make($request->all(), ['cost' => 'required']);
+
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()->all()], 422);
+        }
+
+        $order = Order::find($id);
+
+        $order->update([
+            'end_date' => now()->addHour(3),
+            'state_id' => 4,
+            'cost' => $request->cost
+        ]);
+
+        return response()->json([
+            "message" => "تم انهاء العمل",
+            "data" => $order
+        ]);
+    }
+
+    public function order_history_for_provider()
+    {
+        $service_provider = ServiceProvider::where('user_id',  auth()->user()->id)->first();
+
+        $osrderCurrent = Order::with('review','proposal.initial_order.client.user' ,'proposal.initial_order.city','proposal.initial_order.job')
+        ->whereHas('proposal', function ($q) use($service_provider){
             $q->where('service_provider_id', $service_provider->id);
         })->where('state_id', 4)->get();
 
@@ -151,6 +165,7 @@ class OrderController extends Controller
         ]);
     }
 
+    // admin
     public function all_orders(){
         $orders = Order::with('review' ,'state')->get();
         return response(['message' => 'قائمة الطلبات' ,'data'=>$orders],200);

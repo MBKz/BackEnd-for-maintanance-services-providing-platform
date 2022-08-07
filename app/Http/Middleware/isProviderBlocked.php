@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Client as ModelsClient;
+use App\Models\ServiceProvider as ModelsServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class Client
+class isProviderBlocked
 {
     /**
      * Handle an incoming request.
@@ -18,8 +18,8 @@ class Client
      */
     public function handle(Request $request, Closure $next)
     {
-        $client = ModelsClient::where('user_id', Auth::user()->id)->first();
-        if ($client == null)    return response(['errors'=>'عذرا لا تملك صلاحية'], 403);
+        $provider = ModelsServiceProvider::where('user_id', Auth::user()->id)->first();
+        if($provider->account_status_id ==3)    return response(['errors'=>'أنت محظور'], 403);
         return $next($request);
     }
 }

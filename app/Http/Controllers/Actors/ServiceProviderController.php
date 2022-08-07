@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Actors;
 use App\Http\Controllers\Controller;
 use App\Http\Interface\Actors\ServiceProviderInterface;
 use App\Models\ServiceProvider;
+use App\Models\User;
+use App\Notifications\MailNotification;
+use App\Notifications\SendPushNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -26,6 +30,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         ]);
     }
 
+    // TODO: test mail
     public function AcceptProvider(Request $request,$id){
 
         $validator = Validator::make($request->all(), [
@@ -38,11 +43,20 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $serviceProvider = ServiceProvider::where('id',$id)->first();
         if($serviceProvider ==null) return response()->json(['error' =>  'مزود الخدمة غير موجود'],404);
 
-        $user = $serviceProvider->user(); //User::where('id', $serviceProvider->user_id)->first();
+        $user = $serviceProvider->user();
+
 
         if ($request->accept == false) {
             $serviceProvider->delete();
             $user->delete();
+            // inform email
+            $arr = [
+                'title'    => 'أهلا بكم في عائلة خليها علينا',
+                'body'     => 'تم رفض طلب انضمامك إلى المنصة ,قد يكون سبب ذلك عدم وضوح أوراق الثبوتية الرجاء التحقق منها و إعادة المحاولة مرة أخرى',
+                'lastLine' => 'نتمنى لكم تجربة مريحة و مربحة'
+            ];
+            Notification::route('mail', $user->email)->notify(new MailNotification($arr));
+
             return response()->json([
                 "message" => "تم رفض الطلب",
                 "data" => [$user]
@@ -51,6 +65,14 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
         $serviceProvider['account_status_id'] = 1;
         $serviceProvider->update();
+        // inform email
+        $arr = [
+            'title'    => 'أهلا بكم في عائلة خليها علينا',
+            'body'     => 'تم قبول طلب انضمامك إلى المنصة ,يمكنك الآن تقديم عروض صيانة و مزاولة العمل',
+            'lastLine' => 'نتمنى لكم تجربة مريحة و مربحة'
+        ];
+        Notification::route('mail', $user->email)->notify(new MailNotification($arr));
+
         return response()->json([[
             'message' =>  'تمت إضافة مزود خدمة جديد',
             'data' =>$serviceProvider
@@ -66,6 +88,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         ]);
     }
 
+    // TODO: notify test
     public function block(Request $request,$id)
     {
         $provider = ServiceProvider::firstWhere('id',$id);
@@ -74,7 +97,16 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $provider['account_status_id'] = 3;
         $provider->update();
 
-        //TODO: ارسال اشعار او ايميل انو انحظر
+        //TODO:
+        $message = 'لقد تم حظر حسابك من قبل المدير لمخالفتك بعض السياسات لايمكنك استقبال طلبات خدمة او تقديم عروض جديدة';
+        $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
+        $user= User::find($provider->user_id);
+        $user->notifications()->create([
+            'message' => 'نشاط الحساب',
+            'body' => $message,
+            'checked' => false,
+            'date' => Carbon::now()->addHour(3)
+        ]);
 
         $block =$provider->block()->create([
             'duration' => 7,
@@ -84,15 +116,23 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         return response(['message' => 'تم حظر مزود الخدمة' ,'data' =>$block],200);
     }
 
+    // TODO: notify test
     public function unblock(Request $request,$id)
     {
         $provider = ServiceProvider::firstWhere('id',$id);
         if($provider == null)    return response()->json(['error' =>  'عذرا مزود الخدمة غير موجود'],404);
 
-        $provider['account_status_id'] = 1;
-        $provider->update();
+        $provider->update(['account_status_id' => 1]);
 
-        //TODO: ارسال اشعار او ايميل انو انفك الحظر
+        $message = 'لقد تم فك الحظر عن حسابك يمكنك استئناف نشاطك';
+        $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
+        $user= User::find($provider->user_id);
+        $user->notifications()->create([
+            'message' => 'نشاط الحساب',
+            'body' => $message,
+            'checked' => false,
+            'date' => Carbon::now()->addHour(3)
+        ]);
 
         $provider->block()->delete();
         return response(['message' => 'تم فك الحظر عن مزود الخدمة' ,'data' =>$provider],200);
@@ -125,7 +165,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             'account_status' => $provider->account_status->title
         ];
 
-        return response()->json(['message' =>  'تمت عملية التعديل بنجاح' ,'data' => $res]);
+        return response()->json(['message' =>  'حالة الحساب' ,'data' => $res]);
     }
 
 }

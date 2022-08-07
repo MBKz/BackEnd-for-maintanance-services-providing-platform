@@ -7,6 +7,7 @@ use App\Http\Controllers\Helper\CityController;
 use App\Http\Controllers\Helper\JobController;
 use App\Http\Controllers\Actors\ClientController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\notifications;
 use App\Http\Controllers\Profile\AdminProfileController;
 use App\Http\Controllers\Profile\ClientProfileController;
 use App\Http\Controllers\Profile\ServiceProviderProfileController;
@@ -17,20 +18,12 @@ use App\Http\Controllers\Order\InitialOrder\InitialOrderController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
+use App\Http\Controllers\Review\ReviewController;
 use App\Http\Controllers\SysInfo\CompanyController;
 use App\Notifications\SendPushNotification;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+
 Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
     // Register
@@ -66,6 +59,11 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         Route::post('user/logout', [LogoutController::class, 'logout']);
         Route::post('FAQ/add/question', [adminFunctionsController::class, 'AddQuestion']);
 
+        //notification
+        Route::get('notifications', [notifications::class, 'index']);
+        Route::delete('notifications/{id}', [notifications::class, 'destroy']);
+        Route::delete('notifications', [notifications::class, 'destroy']);
+
         // Super Admin
         Route::group(['middleware' => 'superAdmin'], function () {
             Route::post('admin/add', [AdminController::class, 'createAdmin']);
@@ -79,7 +77,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             // Backup & statistics
             Route::post('backup', [adminFunctionsController::class, 'backup']);
             Route::get('statistics', [adminFunctionsController::class, 'statistics']);
-
 
             // profile
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
@@ -121,32 +118,36 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // ServiceProvider Api
         Route::group(['middleware' => 'serviceProvider'], function () {
 
-            // profile
-            Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
-
-            //  availability and activity
-            Route::get('getActivity', [ServiceProviderController::class, 'getActivity']);
-            Route::post('editActivity', [ServiceProviderController::class, 'editActivity']);
-
-
-            //  posts
-            Route::post('post/add', [PostController::class, 'store']);
-            Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
-            Route::get('post/profile', [PostController::class, 'show']);
-
-
-            // order
-            Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
-
-            Route::post('proposal/add', [ProposalController::class, 'store']);
             Route::get('proposal/forProvider', [ProposalController::class, 'get_all_for_provider']);
-            Route::get('proposal/delete/{id}', [ProposalController::class, 'destroy']);
+            Route::delete('proposal/delete/{id}', [ProposalController::class, 'destroy']);
 
             Route::post('order/start/{id}', [OrderController::class, 'order_start']);
             Route::post('order/end/{id}', [OrderController::class, 'order_end']);
 
             Route::get('order/orderCurrent/forProvider', [OrderController::class, 'order_current_for_provider']);
             Route::get('order/orderHistory/forProvider', [OrderController::class, 'order_history_for_provider']);
+
+            Route::group(['middleware' => 'isProviderBlocked'], function () {
+
+                // profile
+                Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
+
+                //  availability and activity
+                Route::get('getActivity', [ServiceProviderController::class, 'getActivity']);
+                Route::post('editActivity', [ServiceProviderController::class, 'editActivity']);
+
+
+                //  posts
+                Route::post('post/add', [PostController::class, 'store']);
+                Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
+                Route::get('post/profile', [PostController::class, 'show']);
+
+                // order
+                Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
+                Route::post('proposal/add', [ProposalController::class, 'store']);
+
+            });
+
         });
 
         // Client Api
@@ -154,28 +155,31 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
             Route::post('notificationTest',function (){
                 $client = \App\Models\Client::where('user_id' ,1)->first();
-                $message = 'test the body ...';
-                $title = 'test title' ;
-                $client->notify(new SendPushNotification( $title,$message,'test tag' ));
+                $client->notify(new SendPushNotification( 'test title','test the body ...','test tag' ));
             });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
 
-            Route::get('provider-info/{id}', [PostController::class, 'provider_info']);
-
+            // order
             Route::post('initialOrder/add', [InitialOrderController::class, 'store']);
-            Route::post('initialOrder/update/{id}', [InitialOrderController::class, 'update']);
             Route::get('initialOrder/forClient', [InitialOrderController::class, 'get_all_for_client']);
             Route::delete('initialOrder/delete/{id}', [InitialOrderController::class, 'destroy']);
 
             Route::get('proposal/forClient/{id}', [ProposalController::class, 'get_all_for_client']);
+
+            Route::get('provider-info/{id}', [PostController::class, 'provider_info']);
 
             Route::post('order/confirm/{id}', [OrderController::class, 'order_confirm']);
 
             Route::get('order/orderCurrent/forClient', [OrderController::class, 'order_current_for_client']);
             Route::get('order/orderHistory/forClient', [OrderController::class, 'order_history_for_client']);
 
+            // review
+            Route::post('review', [ReviewController::class, 'store']);
+            Route::delete('review/{id}', [ReviewController::class, 'destroy']);
+
         });
 
     });
+
 });

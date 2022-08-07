@@ -18,11 +18,8 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        $user_id = Auth::user()->id;
-        $admin = ModelsAdmin::where('user_id', $user_id)->first();
-        if($admin != null ){
-            return $next($request);
-        }
-        return response(['errors'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 403);
+        $admin = ModelsAdmin::where('user_id', Auth::user()->id)->first();
+        if($admin == null ) return response(['errors'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 403);
+        return $next($request);
     }
 }
