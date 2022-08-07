@@ -11,12 +11,10 @@ use App\Models\Job;
 use App\Models\Order;
 use App\Models\ServiceProvider;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use phpDocumentor\Reflection\Types\Object_;
 
 class adminFunctionsController extends Controller implements FAQInterface
 {
