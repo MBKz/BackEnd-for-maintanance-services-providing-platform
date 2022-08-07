@@ -21,6 +21,7 @@ class InitialOrderController extends Controller
         $client = Client::where('user_id', $user_id)->first();
         $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal')
             ->where('client_id', $client->id)
+            ->where('state_id','!=',4)
             ->get();
 
         return response()->json([
