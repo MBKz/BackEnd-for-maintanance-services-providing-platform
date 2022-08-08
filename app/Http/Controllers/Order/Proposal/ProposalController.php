@@ -53,7 +53,7 @@ class ProposalController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 400);
+            return response(['error' => $validator->errors()->all()], 400);
         }
 
         $user_id = auth()->user()->id;

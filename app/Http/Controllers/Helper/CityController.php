@@ -33,7 +33,7 @@ class CityController extends Controller implements CityInterface
             'name' => 'required',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $city = City::create([
@@ -51,12 +51,11 @@ class CityController extends Controller implements CityInterface
 
         if ($city == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "خدماتنا لم تغط هذه المدينة بعد"
             ], 422);
         }
 
         return response()->json([
-            "success" => true,
             "message" => "معلومات المدينة",
             "data" => $city
         ]);
@@ -74,7 +73,7 @@ class CityController extends Controller implements CityInterface
 
         $validator = Validator::make($request->all(), ['name' => 'required']);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $city['name'] = $request->name;
@@ -93,14 +92,13 @@ class CityController extends Controller implements CityInterface
 
         if ($city == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "المدينة ليست ضمن نقطاق تغطيتنا"
             ], 422);
         }
         $city->delete();
 
         return response()->json([
-            "success" => true,
-            "message" => "City deleted successfully ",
+            "message" => "تم الحذف  ",
             "data" => $city
         ]);
     }

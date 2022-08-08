@@ -33,7 +33,7 @@ class ClientProfileController extends Controller implements ProfileInterface
             'image' => 'image|mimes:jpg,png,jpeg,gif,svg,bmp',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $upload = new HelperController();

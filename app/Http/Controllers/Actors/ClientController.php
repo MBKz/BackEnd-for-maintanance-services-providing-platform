@@ -16,7 +16,7 @@ class ClientController extends Controller implements ClientInterface
 
         if ($client == null) {
             return response()->json([
-                "message" => "Not Found Client"
+                "message" => "هذا العميل غير موجود"
             ], 422);
         }
 

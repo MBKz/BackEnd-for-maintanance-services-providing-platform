@@ -37,7 +37,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             'accept' => 'required'
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $serviceProvider = ServiceProvider::where('id',$id)->first();
@@ -53,7 +53,8 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             $arr = [
                 'title'    => 'أهلا بكم في عائلة خليها علينا',
                 'body'     => 'تم رفض طلب انضمامك إلى المنصة ,قد يكون سبب ذلك عدم وضوح أوراق الثبوتية الرجاء التحقق منها و إعادة المحاولة مرة أخرى',
-                'lastLine' => 'نتمنى لكم تجربة مريحة و مربحة'
+                'code' => 'لا تتأخر ..',
+                'lastLine' => 'بانتظار انضمامكم بعد تصحيح اوراق الثبوتية'
             ];
             Notification::route('mail', $user->email)->notify(new MailNotification($arr));
 
@@ -69,6 +70,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $arr = [
             'title'    => 'أهلا بكم في عائلة خليها علينا',
             'body'     => 'تم قبول طلب انضمامك إلى المنصة ,يمكنك الآن تقديم عروض صيانة و مزاولة العمل',
+            'code'     => 'ماذا تنتظر ! هيا نعمل ',
             'lastLine' => 'نتمنى لكم تجربة مريحة و مربحة'
         ];
         Notification::route('mail', $user->email)->notify(new MailNotification($arr));

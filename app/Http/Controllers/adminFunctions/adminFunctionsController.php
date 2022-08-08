@@ -31,7 +31,6 @@ class adminFunctionsController extends Controller implements FAQInterface
     public function statistics()
     {
         $statistics = (object) [];
-
         $statistics->users = User::query()->count();
         $statistics->clients = Client::query()->count();
         $statistics->service_providers = ServiceProvider::query()->count();
@@ -106,7 +105,7 @@ class adminFunctionsController extends Controller implements FAQInterface
         ]);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $faq = Faq::find($id);

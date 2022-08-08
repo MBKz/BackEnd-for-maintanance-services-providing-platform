@@ -32,12 +32,12 @@ class ServiceProviderProfileController extends Controller implements ProfileInte
         ]);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $upload = new HelperController();
         $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ServiceProviderProfile/');
-        
+
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
         if ($request->image != null)       $user['image'] = $image;

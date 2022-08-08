@@ -23,7 +23,7 @@ class LoginController extends Controller implements LoginInterface
             'password' => 'required',
         ]);
         if($input->fails())
-            return response(['errors'=>$input->errors()->all()],400);
+            return response(['error'=>$input->errors()->all()],400);
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
@@ -48,7 +48,7 @@ class LoginController extends Controller implements LoginInterface
             'device_token' => 'required'
         ]);
         if($input->fails())
-            return response(['errors'=>$input->errors()->all()],400);
+            return response(['error'=>$input->errors()->all()],400);
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;
@@ -76,7 +76,7 @@ class LoginController extends Controller implements LoginInterface
             'device_token' => 'required'
         ]);
         if($input->fails())
-            return response(['errors'=>$input->errors()->all()],400);
+            return response(['error'=>$input->errors()->all()],400);
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user_id = Auth::user()->id;

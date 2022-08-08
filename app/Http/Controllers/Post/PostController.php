@@ -37,7 +37,7 @@ class PostController extends Controller implements PostInterface
             'image[]' => 'array|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
 

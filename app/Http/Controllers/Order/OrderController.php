@@ -133,7 +133,7 @@ class OrderController extends Controller
         $validator = Validator::make($request->all(), ['cost' => 'required']);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $order = Order::find($id);

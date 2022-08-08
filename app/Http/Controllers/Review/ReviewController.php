@@ -21,7 +21,7 @@ class ReviewController extends Controller
             'order_id' => 'required'
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $review = Review::create(['rate' => $request->rate , 'comment' => $request->comment]);

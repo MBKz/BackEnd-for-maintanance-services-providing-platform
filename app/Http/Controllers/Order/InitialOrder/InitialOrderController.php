@@ -74,7 +74,7 @@ class InitialOrderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $user_id = auth()->user()->id;

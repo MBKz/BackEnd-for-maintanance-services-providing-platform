@@ -44,7 +44,7 @@ class MailNotification extends Notification
         return (new MailMessage)
             ->greeting($this->arr['title'])
             ->from(config('mail.mailers.smtp.username'))
-            ->subject('Account verification')
+            ->subject('Account Management')
             ->line($this->arr['body'])
             ->line($this->arr['code'])
             ->salutation($this->arr['lastLine']);

@@ -31,9 +31,9 @@ class JobController extends Controller implements JobInterface
             'image' => 'required|image|mimes:png,jpg,jpeg,bmp',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
-        
+
        $upload = new HelperController();
        $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
        $image =  $upload->upload_image_localy($request,'image','Job/image/');
@@ -74,13 +74,13 @@ class JobController extends Controller implements JobInterface
             'image' => 'image|mimes:png,jpg,jpeg,bmp',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $upload = new HelperController();
         $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
         $image =  $upload->upload_image_localy($request,'image','Job/image/');
-        
+
         if ($request->title != null)  $job['title'] = $request->title;
         if ($request->description != null)   $job['description'] = $request->description;
         if ($request->icon != null)       $job['icon'] = $icon;
