@@ -19,7 +19,7 @@ class Admin
     public function handle(Request $request, Closure $next)
     {
         $admin = ModelsAdmin::where('user_id', Auth::user()->id)->first();
-        if($admin == null ) return response(['errors'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 403);
+        if($admin == null ) return response(['error'=> 'عذرا هذه الخدمة ليست ضمن صلاحياتك'], 403);
         return $next($request);
     }
 }

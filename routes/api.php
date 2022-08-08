@@ -127,24 +127,28 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::get('order/orderCurrent/forProvider', [OrderController::class, 'order_current_for_provider']);
             Route::get('order/orderHistory/forProvider', [OrderController::class, 'order_history_for_provider']);
 
+            Route::get('getActivity', [ServiceProviderController::class, 'getActivity']);
+
+            Route::group(['middleware' => ['isProviderSuspended','isProviderBlocked']], function () {
+
+                // order
+                Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
+                Route::post('proposal/add', [ProposalController::class, 'store']);
+
+            });
+
             Route::group(['middleware' => 'isProviderBlocked'], function () {
 
                 // profile
                 Route::post('serviceProvider/profile', [ServiceProviderProfileController::class, 'editProfile']);
 
                 //  availability and activity
-                Route::get('getActivity', [ServiceProviderController::class, 'getActivity']);
                 Route::post('editActivity', [ServiceProviderController::class, 'editActivity']);
-
 
                 //  posts
                 Route::post('post/add', [PostController::class, 'store']);
                 Route::delete('post/delete/{id}', [PostController::class, 'destroy']);
                 Route::get('post/profile', [PostController::class, 'show']);
-
-                // order
-                Route::get('initialOrder/forProvider', [InitialOrderController::class, 'get_all_for_provider']);
-                Route::post('proposal/add', [ProposalController::class, 'store']);
 
             });
 

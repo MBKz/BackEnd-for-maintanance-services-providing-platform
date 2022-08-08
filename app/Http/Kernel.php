@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'client' => \App\Http\Middleware\Client::class,
         'JsonResponse' => \App\Http\Middleware\JsonResponse::class,
         'cors' => \App\Http\Middleware\Cors::class,
-        'isProviderBlocked' => \App\Http\Middleware\isProviderBlocked::class
+        'isProviderBlocked' => \App\Http\Middleware\isProviderBlocked::class,
+        'isProviderSuspended' => \App\Http\Middleware\isProviderSuspended::class
     ];
 }

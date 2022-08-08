@@ -32,6 +32,7 @@ class adminFunctionsController extends Controller implements FAQInterface
     public function statistics()
     {
         $statistics = (object) [];
+
         $statistics->users = User::query()->count();
         $statistics->clients = Client::query()->count();
         $statistics->service_providers = ServiceProvider::query()->count();
@@ -40,15 +41,26 @@ class adminFunctionsController extends Controller implements FAQInterface
         $statistics->waiting_to_lunch_orders = Order::query()->where('state_id','=',1)->count();
         $statistics->on_going_orders = Order::query()->where('state_id','=',4)->count();
         $statistics->achieved_orders = Order::query()->where('state_id','=',5)->count();
-        $statistics->weekly_report = Order::query()->select('start_date as date',DB::raw( 'count(*) as num'))
-                                            ->groupBy('start_date')
-                                            ->where('start_date' ,'<' , now()->startOfWeek())
-                                            ->where('start_date' ,'<' , now()->endOfWeek())
-                                            ->get();
+        $statistics->weekly_report = $this->statistic_chart();
 
         return response(['message'=>'إحصائيات النظام الحالية','statistics'=>$statistics],200);
     }
 
+    public function statistic_chart(){
+        $value = [];
+        for($i=0 ; $i<7 ; $i++){
+            $data = Order::query()->select('start_date as date',DB::raw( 'count(*) as num'))
+                ->where(DB::raw( 'CAST(start_date as DATE)') ,'=' , now()->subDays($i)->toDateString())
+                ->groupBy('start_date')
+                ->get();
+            $num = count($data);
+
+
+            $value[$i] = $num;
+
+        }
+        return $value ;
+    }
     // FAQ
     public function get_all(){
 

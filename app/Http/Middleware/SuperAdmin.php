@@ -19,7 +19,7 @@ class SuperAdmin
     public function handle(Request $request, Closure $next)
     {
         $admin = ModelsAdmin::where('user_id', Auth::user()->id)->first();
-        if($admin == null || $admin->role_id != 1)  return response(['errors'=>'عذرا صلاحيات غير متاحة'], 403);
+        if($admin == null || $admin->role_id != 1)  return response(['error'=>'عذرا صلاحيات غير متاحة'], 403);
         return $next($request);
     }
 }
