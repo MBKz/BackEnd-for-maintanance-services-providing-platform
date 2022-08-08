@@ -28,7 +28,6 @@ class adminFunctionsController extends Controller implements FAQInterface
         return response(['message'=>'تمت عملية النسخ الاحتياطي بنجاح','date'=>now()]);
     }
 
-    //TODO: test
     public function statistics()
     {
         $statistics = (object) [];
@@ -53,14 +52,13 @@ class adminFunctionsController extends Controller implements FAQInterface
                 ->where(DB::raw( 'CAST(start_date as DATE)') ,'=' , now()->subDays($i)->toDateString())
                 ->groupBy('start_date')
                 ->get();
-            $num = count($data);
-
-
+            if(count($data) == 1) $num = $data[0]->num ;
+            else $num = count($data);
             $value[$i] = $num;
-
         }
         return $value ;
     }
+
     // FAQ
     public function get_all(){
 
