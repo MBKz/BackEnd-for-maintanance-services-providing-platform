@@ -99,6 +99,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $provider['account_status_id'] = 3;
         $provider->update();
 
+
         //TODO:
         $message = 'لقد تم حظر حسابك من قبل المدير لمخالفتك بعض السياسات لايمكنك استقبال طلبات خدمة او تقديم عروض جديدة';
         $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
@@ -126,6 +127,14 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
         $provider->update(['account_status_id' => 1]);
 
+        // inform email
+        $arr = [
+            'title'    => 'حظررررررررررررررر',
+            'body'     => 'تم رفض طلب انضمامك إلى المنصة ,قد يكون سبب ذلك عدم وضوح أوراق الثبوتية الرجاء التحقق منها و إعادة المحاولة مرة أخرى',
+            'code' => 'لا تتأخر ..',
+            'lastLine' => 'بانتظار انضمامكم بعد تصحيح اوراق الثبوتية'
+        ];
+        Notification::route('mail', $provider->user->email)->notify(new MailNotification($arr));
         $message = 'لقد تم فك الحظر عن حسابك يمكنك استئناف نشاطك';
         $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
         $user= User::find($provider->user_id);
