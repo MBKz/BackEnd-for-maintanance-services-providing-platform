@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Admin as ModelsAdmin;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SuperAdmin
 {
@@ -16,13 +18,8 @@ class SuperAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-
-        if(auth()->user()->role == 1){
-      
-        }
-        else{
-                return response()->json(['errors'=>'You Are Not SuperAdmin'], 422);
-        }
+        $admin = ModelsAdmin::where('user_id', Auth::user()->id)->first();
+        if($admin == null || $admin->role_id != 1)  return response(['error'=>'عذرا صلاحيات غير متاحة'], 403);
         return $next($request);
     }
 }

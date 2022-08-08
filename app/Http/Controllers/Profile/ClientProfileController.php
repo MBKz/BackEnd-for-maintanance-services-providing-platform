@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Profile\ProfileInterface;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -17,51 +18,33 @@ class ClientProfileController extends Controller implements ProfileInterface
     {
         $user_id = Auth::user()->id;
         $client = Client::where('user_id', $user_id)->with('user')->first();
-        
-        return response()->json(['message' =>  'Your Profile','data' => $client]);  
+        if($client == null)
+            return response()->json(['message' =>  'لا يوجد زبون !']);
+
+        return response()->json(['message' =>  'معلوماتك الشخصية','data' => $client]);
     }
-    
+
     public function editProfile(Request $request)
     {
 
         $user = Auth::user();
 
-
         $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg',
+            'image' => 'image|mimes:jpg,png,jpeg,gif,svg,bmp',
         ]);
-
-
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                'UserPhoto/ClientProfile',
-                $image,
-                $filename
-            );
-            $image = $request->image = url('/') . '/storage/' . 'UserPhoto' . '/' . 'ClientProfile' . '/' . $filename;
-        }
+        $upload = new HelperController();
+        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ClientProfile/');
 
-
-        if ($request->password != null)    $user['password'] = bcrypt($user['password']);
+        if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
         if ($request->image != null)       $user['image'] = $image;
 
         $user->update();
 
-        $user_id = $user['id'];
-
-        $client = Client::where('user_id', $user_id)->first();
-
-        if ($request->device_token != null)  $client['device_token'] = $request->device_token;
-
-        $client->update();
-
-        return response()->json(['message' =>  'You Update Your Profile']);
+        return response()->json(['message' =>  'تمت عملية التعديل بنجاح' ,'data'=>$user]);
     }
 }

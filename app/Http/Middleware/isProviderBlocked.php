@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Admin;
-use App\Models\Client;
+use App\Models\ServiceProvider as ModelsServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminANDClient
+class isProviderBlocked
 {
     /**
      * Handle an incoming request.
@@ -19,14 +18,8 @@ class AdminANDClient
      */
     public function handle(Request $request, Closure $next)
     {
-        $user_id = Auth::user()->id;
-        $client = Client::where('user_id', $user_id)->first();
-        $admin = Admin::where('user_id', $user_id)->first();
-        if ($client == null && $admin ==null) {
-
-            return response()->json(['errors'=>'You do not have access here'], 422);
-     }
-
+        $provider = ModelsServiceProvider::where('user_id', Auth::user()->id)->first();
+        if( $provider->account_status_id  == 3 )    return response(['error'=>'لا يمكنك الوصول'], 403);
         return $next($request);
     }
 }

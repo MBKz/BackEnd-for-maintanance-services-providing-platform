@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE' ,'Asia/Damascus'),
 
     /*
     |--------------------------------------------------------------------------
@@ -185,6 +185,8 @@ return [
         /*
          * Package Service Providers...
          */
+
+        Benwilkins\FCM\FcmNotificationServiceProvider::class,
 
         /*
          * Application Service Providers...

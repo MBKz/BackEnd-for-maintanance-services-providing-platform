@@ -14,6 +14,7 @@ return [
     |
     */
 
+
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
@@ -30,5 +31,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    'fcm' => [
+        'key' => env('FCM_SECRET_KEY')
+    ]
 
 ];

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('service_providers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('rate')->nullable();
+            $table->double('rate')->nullable();
             $table->integer('num_of_raters')->nullable();
             $table->string('device_token')->nullable();
             $table->integer('user_id')->unsigned()->unique();

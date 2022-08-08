@@ -13,21 +13,11 @@ use Illuminate\Support\Facades\Validator;
 class AdminController extends Controller implements AdminInterface
 {
 
-
-
-    public function getAdmins() 
+    public function getAdmins()
     {
-        $admin  = Admin::with('user','role')->get();
-
-        if ($admin == null) {
-            return response()->json([
-                "message" => "Not Found Admin"
-            ], 422);
-        }
-
+        $admin  = Admin::with('user','role')->where('role_id' ,2)->get();
         return response()->json([
-            "success" => true,
-            "message" => "Admins List",
+            "message" => "قائمة الموظفين",
             "data" => $admin
         ]);
     }
@@ -39,13 +29,12 @@ class AdminController extends Controller implements AdminInterface
             'last_name' => 'required',
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
-            'age' => 'required',
+            'birthday' => 'required',
             'gender' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(['error' => $validator->errors()], 400);
         }
-       
 
        $user= User::create([
             'first_name' => $request->first_name,
@@ -53,41 +42,29 @@ class AdminController extends Controller implements AdminInterface
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'password' =>'$2y$10$D6qxVnoAHMJ./aWONwsQvug8w6dwfmjaaTJdTyGOQkBWP2yR9Jw3W',
-            'age' => $request->age,
+            'birthday' => $request->birthday,
             'gender' => $request->gender,
         ]);
 
-        
-        Admin::create([
-            'user_id' =>$user->latest('id')->first()->id,
-            'role_id' => 2,
-        ]);
-       
-
-        return response()->json([['message' =>  'Successfully added']]);
+          $user->admin()->create(['role_id' => 2]);
+        return response()->json([['message' =>  'تمت الإضافة بنجاح' ,'data' => $user->load('admin')]]);
     }
-
 
     public function destroy($id)
     {
         $admin = Admin::where('id', $id)->first();
-        $user = User::where('id', $admin->user_id)->first();
-
         if ($admin == null) {
             return response()->json([
-                "message" => "Not Found Admin"
-            ], 422);
+                "error" => "عذرا غير موجود"
+            ], 404);
         }
+        $user = User::where('id', $admin->user_id)->first();
         $admin->delete();
         $user->delete();
-        
+
         return response()->json([
-            "success" => true,
-            "message" => "Admin deleted successfully ",
+            "message" => "تمت عملية الحذف بنجاح",
             "data" => $admin
         ]);
     }
-
-
-
 }

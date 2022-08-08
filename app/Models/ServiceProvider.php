@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class ServiceProvider extends Model
 {
-    use HasFactory;
+    use HasFactory ,Notifiable;
 
     public $timestamps = false;
 
@@ -16,27 +17,30 @@ class ServiceProvider extends Model
         'city_id','rate','num_of_raters','device_token','identity_id'
     ];
 
-    
+
+    public function routeNotificationForFcm($notification)
+    {
+        return $this->device_token;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    
     public function account_status()
     {
         return $this->belongsTo(AccountStatus::class);
     }
 
 
-    
+
     public function city()
     {
         return $this->belongsTo(City::class);
     }
 
 
-    
     public function job()
     {
         return $this->belongsTo(Job::class);
@@ -47,10 +51,17 @@ class ServiceProvider extends Model
         return $this->belongsTo(Proposal::class);
     }
 
-
     public function block()
     {
-        return $this->belongsTo(Block::class);
+        return $this->hasMany(Block::class);
     }
 
+    public function identity()
+    {
+        return $this->belongsTo(Identity::class);
+    }
+
+    public function post(){
+        return $this->hasMany(Post::class);
+    }
 }

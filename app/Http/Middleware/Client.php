@@ -18,13 +18,8 @@ class Client
      */
     public function handle(Request $request, Closure $next)
     {
-
-        $user_id = Auth::user()->id;
-        $client = ModelsClient::where('user_id', $user_id)->first();
-        if ($client == null) {
-            return response()->json(['errors'=>'You do not have access here'], 422);
-     }
-
+        $client = ModelsClient::where('user_id', Auth::user()->id)->first();
+        if ($client == null)    return response(['error'=>'عذرا لا تملك صلاحية'], 403);
         return $next($request);
     }
 }

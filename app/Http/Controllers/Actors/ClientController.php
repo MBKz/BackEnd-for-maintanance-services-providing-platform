@@ -10,19 +10,18 @@ use App\Models\Client;
 class ClientController extends Controller implements ClientInterface
 {
 
-    public function getAllClient() 
+    public function get_all()
     {
         $client  = Client::with('user')->get();
 
         if ($client == null) {
             return response()->json([
-                "message" => "Not Found Client"
+                "message" => "هذا العميل غير موجود"
             ], 422);
         }
 
         return response()->json([
-            "success" => true,
-            "message" => "Clients List",
+            "message" => "قائمة الزبائن",
             "data" => $client
         ]);
     }

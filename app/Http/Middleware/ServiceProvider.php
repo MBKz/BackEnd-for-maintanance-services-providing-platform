@@ -19,24 +19,9 @@ class ServiceProvider
     public function handle(Request $request, Closure $next)
     {
 
-        $user_id = Auth::user()->id;
-        $provider = ModelsServiceProvider::where('user_id', $user_id)->first();
-        if ($provider != null) {
-            if($provider->account_status_id ==4)
-            {
-                return response()->json(['errors'=>'You Are Waiting For Acceptance'], 422);
-             }
-
-             if($provider->account_status_id ==3)
-             {
-                return response()->json(['errors'=>'You Are Blocked'], 422);
-             }
-     }
-     else
-     return response()->json(['errors'=>'You do not have access here'], 422);
-
-     return $next($request);
-
-}
-
+        $provider = ModelsServiceProvider::where('user_id', Auth::user()->id)->first();
+        if ($provider == null)  return response(['error'=>'عذرا ليست من صلاحياتك'], 403);
+        if($provider->account_status_id ==4 )   return response(['error'=>'لم يتم قبول طلب انضمامك بعد'], 403);
+        return $next($request);
+    }
 }

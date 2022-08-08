@@ -67,10 +67,9 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\Admin::class,
         'serviceProvider' => \App\Http\Middleware\ServiceProvider::class,
         'client' => \App\Http\Middleware\Client::class,
-        'json.response' => \App\Http\Middleware\JsonResponse::class,
+        'JsonResponse' => \App\Http\Middleware\JsonResponse::class,
         'cors' => \App\Http\Middleware\Cors::class,
-        'provider.admin' => \App\Http\Middleware\ProviderANDadmin::class,
-        'provider.client' => \App\Http\Middleware\ProviderANDClient::class,
-        'client.admin' => \App\Http\Middleware\AdminANDClient::class,
+        'isProviderBlocked' => \App\Http\Middleware\isProviderBlocked::class,
+        'isProviderSuspended' => \App\Http\Middleware\isProviderSuspended::class
     ];
 }

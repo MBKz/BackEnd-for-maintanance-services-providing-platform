@@ -15,40 +15,32 @@ class CityController extends Controller implements CityInterface
     public function get_all()
     {
         $cities  = City::get();
-
         if ($cities == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "عذرا لا يوجد"
             ], 422);
         }
-
         return response()->json([
-            "success" => true,
-            "message" => "Cities List",
+            "message" => "المدن المتاحة",
             "data" => $cities
         ]);
     }
 
-
-
     public function store(Request $request)
     {
         $input = $request->all();
-
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
         $city = City::create([
             'name' => $request->name,
         ]);
         return response()->json([
-            "success" => true,
-            "message" => "City created successfully.",
+            "message" => "تمت إضافة المدينة",
             "data" => $city
         ]);
     }
@@ -59,17 +51,15 @@ class CityController extends Controller implements CityInterface
 
         if ($city == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "خدماتنا لم تغط هذه المدينة بعد"
             ], 422);
         }
 
         return response()->json([
-            "success" => true,
-            "message" => "City retrieved successfully.",
+            "message" => "معلومات المدينة",
             "data" => $city
         ]);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -77,29 +67,24 @@ class CityController extends Controller implements CityInterface
 
         if ($city == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "عذرا لا يوجد"
             ], 422);
         }
 
-        $validator = Validator::make($request->all, [
-            'name' => 'required',
-        ]);
-
+        $validator = Validator::make($request->all(), ['name' => 'required']);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['error' => $validator->errors()->all()], 422);
         }
 
-        if ($request->name != null)  $city['name'] = $request->name;
+        $city['name'] = $request->name;
 
         $city->update();
 
         return response()->json([
-            "success" => true,
-            "message" => "City updated successfully.",
+            "message" => "تمت عملية التعديل بنجاح",
             "data" => $city
         ]);
     }
-
 
     public function destroy($id)
     {
@@ -107,14 +92,13 @@ class CityController extends Controller implements CityInterface
 
         if ($city == null) {
             return response()->json([
-                "message" => "Not Found City"
+                "message" => "المدينة ليست ضمن نقطاق تغطيتنا"
             ], 422);
         }
         $city->delete();
 
         return response()->json([
-            "success" => true,
-            "message" => "City deleted successfully ",
+            "message" => "تم الحذف  ",
             "data" => $city
         ]);
     }
