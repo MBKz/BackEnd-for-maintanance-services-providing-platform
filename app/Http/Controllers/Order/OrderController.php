@@ -69,7 +69,7 @@ class OrderController extends Controller
 
         $client = Client::where('user_id', auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('review','proposal.initial_order.order_gallery','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
+        $osrderCurrent = Order::with('review','proposal.initial_order.order_gallery','proposal.initial_order.city','proposal.initial_order.job')
         ->whereHas('proposal.initial_order', function ($q) use($client) {
             $q->where('client_id', $client->id);
         })->where('state_id', 1)->orWhere('state_id', 3)

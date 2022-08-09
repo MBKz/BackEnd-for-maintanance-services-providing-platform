@@ -19,7 +19,7 @@ class ProposalController extends Controller
     {
         $user_id = auth()->user()->id;
         $service_provider = ServiceProvider::where('user_id',$user_id)->first();
-        $proposal  = Proposal::with('initial_order.city','initial_order.job','initial_order.order_gallery','state')
+        $proposal  = Proposal::with('initial_order.client.user','initial_order.city','initial_order.job','initial_order.order_gallery','state')
         ->where('service_provider_id',$service_provider->id)
         ->where('state_id','!=',4)
         ->orderBy('id', 'DESC')->get();

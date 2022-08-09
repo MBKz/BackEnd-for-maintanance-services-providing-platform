@@ -21,7 +21,7 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with(['job', 'state', 'city', 'client', 'proposal.service_provider'=> function($q){
+        $initialOrders  = InitialOrder::with(['job', 'state', 'city', 'proposal.service_provider'=> function($q){
             $q->select('id','rate');
         } ,'order_gallery'])
             ->where('client_id', $client->id)
@@ -41,7 +41,7 @@ class InitialOrderController extends Controller
             ->where('account_status_id', 1)
             ->first();
 
-        $initialOrders = InitialOrder::with('job', 'state', 'city','order_gallery')
+        $initialOrders = InitialOrder::with('job', 'state','client.user','city','order_gallery')
             ->select('*')
             ->where('city_id', '=', $service_provider->city_id)
             ->where('job_id', '=', $service_provider->job_id)
