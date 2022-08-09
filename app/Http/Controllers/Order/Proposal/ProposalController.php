@@ -33,7 +33,8 @@ class ProposalController extends Controller
     public function get_all_for_client($id)
     {
 
-        $proposals = Proposal::where('initial_order_id' ,$id)->with('state')->get();
+        $proposals = Proposal::where('initial_order_id' ,$id)->with('state')
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "جميع الطلبات الخاصة بك",
@@ -41,7 +42,6 @@ class ProposalController extends Controller
         ]);
     }
 
-    // TODO:notify
     public function store(Request $request)
     {
 

@@ -10,6 +10,7 @@ use App\Models\ServiceProvider;
 use App\Models\User;
 use App\Notifications\SendPushNotification;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,7 +21,9 @@ class InitialOrderController extends Controller
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal' ,'order_gallery')
+        $initialOrders  = InitialOrder::with(['job', 'state', 'city', 'client', 'proposal.service_provider'=> function($q){
+            $q->select('id','rate');
+        } ,'order_gallery'])
             ->where('client_id', $client->id)
             ->where('state_id','!=',4)
             ->orderBy('id', 'DESC')->get();
