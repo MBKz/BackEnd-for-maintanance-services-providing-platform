@@ -10,19 +10,23 @@ use App\Models\ServiceProvider;
 use App\Models\User;
 use App\Notifications\SendPushNotification;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class InitialOrderController extends Controller
 {
+
     public function get_all_for_client()
     {
         $user_id = auth()->user()->id;
         $client = Client::where('user_id', $user_id)->first();
-        $initialOrders  = InitialOrder::with('job', 'state', 'city', 'client', 'proposal')
+        $initialOrders  = InitialOrder::with(['job', 'state', 'city', 'client', 'proposal.service_provider'=> function($q){
+            $q->select('id','rate');
+        } ,'order_gallery'])
             ->where('client_id', $client->id)
             ->where('state_id','!=',4)
-            ->get();
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "جميع الطلبات الخاصة بك",
@@ -37,7 +41,7 @@ class InitialOrderController extends Controller
             ->where('account_status_id', 1)
             ->first();
 
-        $initialOrders = InitialOrder::with('job', 'state', 'city')
+        $initialOrders = InitialOrder::with('job', 'state', 'city','order_gallery')
             ->select('*')
             ->where('city_id', '=', $service_provider->city_id)
             ->where('job_id', '=', $service_provider->job_id)
@@ -46,12 +50,11 @@ class InitialOrderController extends Controller
                     ->orWhere('initial_orders.state_id', '=', 2);
             })
             ->whereNotIn('id', (function ($query) use ($service_provider) {
-
                 $query->from('proposals')
                     ->select('initial_order_id')
                     ->where('service_provider_id', '=', $service_provider->id);
             }))
-            ->get();
+            ->orderBy('id', 'DESC')->get();
 
 
         return response()->json([
@@ -119,7 +122,7 @@ class InitialOrderController extends Controller
             ->get();
 
         // TODO:notify
-        $message = $initialOrder->id.'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز !';
+        $message = 'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز ! الطلب ذو المعرف #'.$initialOrder->id;
         $title = 'جاهز للعمل ؟' ;
         foreach ($providers as $provider){
             $provider->notify(new SendPushNotification($title,$message,'order request'));

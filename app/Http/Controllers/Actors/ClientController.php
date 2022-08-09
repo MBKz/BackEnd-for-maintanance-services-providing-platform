@@ -12,7 +12,7 @@ class ClientController extends Controller implements ClientInterface
 
     public function get_all()
     {
-        $client  = Client::with('user')->get();
+        $client  = Client::with('user')->orderBy('id', 'DESC')->get();
 
         if ($client == null) {
             return response()->json([

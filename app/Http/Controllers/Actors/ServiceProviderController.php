@@ -22,7 +22,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
     {
         $serviceProvider  = ServiceProvider::with('user','identity','job','account_status','city')
             ->where('account_status_id' ,'!=' ,4)
-            ->get();
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "قائمة مزودي الخدمات",
@@ -40,10 +40,10 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             return response(['error' => $validator->errors()->all()], 422);
         }
 
-        $serviceProvider = ServiceProvider::where('id',$id)->first();
+        $serviceProvider = ServiceProvider::with('user')->where('id',$id)->first();
         if($serviceProvider ==null) return response()->json(['error' =>  'مزود الخدمة غير موجود'],404);
 
-        $user = $serviceProvider->user();
+        $user = $serviceProvider->user;
 
 
         if ($request->accept == false) {
@@ -83,7 +83,8 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
     public function getProviderRequests()
     {
-        $serviceProvider  = ServiceProvider::with('user','identity','job','account_status','city')->where('account_status_id',4)->get();
+        $serviceProvider  = ServiceProvider::with('user','identity','job','account_status','city')
+            ->where('account_status_id',4)->orderBy('id', 'DESC')->get();
         return response()->json([
             "message" => "طلبات انضمام مزودي الخدمات",
             "data" => $serviceProvider
@@ -100,7 +101,6 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         $provider->update();
 
 
-        //TODO:
         $message = 'لقد تم حظر حسابك من قبل المدير لمخالفتك بعض السياسات لايمكنك استقبال طلبات خدمة او تقديم عروض جديدة';
         $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
         $user= User::find($provider->user_id);
@@ -129,10 +129,10 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
         // inform email
         $arr = [
-            'title'    => 'حظررررررررررررررر',
-            'body'     => 'تم رفض طلب انضمامك إلى المنصة ,قد يكون سبب ذلك عدم وضوح أوراق الثبوتية الرجاء التحقق منها و إعادة المحاولة مرة أخرى',
-            'code' => 'لا تتأخر ..',
-            'lastLine' => 'بانتظار انضمامكم بعد تصحيح اوراق الثبوتية'
+            'title'    => 'أهلا بكم في عائلة خليها علينا مرة أخرى',
+            'body'     => 'لقد تم فك الحظر عن حسابك يمكنك استئناف نشاطك',
+            'code' => 'هيا للعمل !',
+            'lastLine' => 'نتمنى لك تجربة أكثر مرونة'
         ];
         Notification::route('mail', $provider->user->email)->notify(new MailNotification($arr));
         $message = 'لقد تم فك الحظر عن حسابك يمكنك استئناف نشاطك';

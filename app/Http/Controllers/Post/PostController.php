@@ -79,7 +79,7 @@ class PostController extends Controller implements PostInterface
 
         $post = Post::with('posts_gallery')
             ->where('service_provider_id', $service_provider->id)
-            ->get();
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "قائمة المنشورات",

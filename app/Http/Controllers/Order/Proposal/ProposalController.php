@@ -19,10 +19,10 @@ class ProposalController extends Controller
     {
         $user_id = auth()->user()->id;
         $service_provider = ServiceProvider::where('user_id',$user_id)->first();
-        $proposal  = Proposal::with('initial_order.city','initial_order.job','initial_order','state')
+        $proposal  = Proposal::with('initial_order.city','initial_order.job','initial_order.order_gallery','state')
         ->where('service_provider_id',$service_provider->id)
         ->where('state_id','!=',4)
-        ->get();
+        ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "جميع الطلبات الخاصة بك",
@@ -33,7 +33,8 @@ class ProposalController extends Controller
     public function get_all_for_client($id)
     {
 
-        $proposals = Proposal::where('initial_order_id' ,$id)->with('state')->get();
+        $proposals = Proposal::where('initial_order_id' ,$id)->with('state')
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "جميع الطلبات الخاصة بك",
@@ -41,7 +42,6 @@ class ProposalController extends Controller
         ]);
     }
 
-    // TODO:notify
     public function store(Request $request)
     {
 
@@ -74,7 +74,7 @@ class ProposalController extends Controller
         ]);
 
         // TODO:notify
-        $message = 'لديك عرض صيانة جديد بمعرف #'.$proposal->id.' من أجل الطلب ذو المعرف #'.$proposal->initial_order_id ;
+        $message = 'لديك عرض صيانة جديد بمعرف #'.$proposal->id.' من أجل الطلب ذو المعرف #'.$proposal->initial_order_id.' سيتم حذف العرض تلقائيا بعد 24 ساعة مالم يتم قبوله' ;
         $client = Client::where('id',$proposal->initial_order->client_id)->first();
         $client->notify(new SendPushNotification(' عرض صيانة',$message,'proposal'));
         $user= User::find($client->user_id);

@@ -37,8 +37,8 @@ class adminFunctionsController extends Controller implements FAQInterface
         $statistics->coverd_cities = City::query()->count();
         $statistics->services = Job::query()->count();
         $statistics->waiting_to_lunch_orders = Order::query()->where('state_id','=',1)->count();
-        $statistics->on_going_orders = Order::query()->where('state_id','=',4)->count();
-        $statistics->achieved_orders = Order::query()->where('state_id','=',5)->count();
+        $statistics->on_going_orders = Order::query()->where('state_id','=',3)->count();
+        $statistics->achieved_orders = Order::query()->where('state_id','=',4)->count();
         $statistics->weekly_report = $this->statistic_chart();
 
         return response(['message'=>'إحصائيات النظام الحالية','statistics'=>$statistics],200);
@@ -47,12 +47,17 @@ class adminFunctionsController extends Controller implements FAQInterface
     public function statistic_chart(){
         $value = [];
         for($i=0 ; $i<7 ; $i++){
+            $num = 0 ;
             $data = Order::query()->select('start_date as date',DB::raw( 'count(*) as num'))
                 ->where(DB::raw( 'CAST(start_date as DATE)') ,'=' , now()->subDays($i)->toDateString())
                 ->groupBy('start_date')
                 ->get();
             if(count($data) == 1) $num = $data[0]->num ;
-            else $num = count($data);
+            else {
+                foreach ($data as $one){
+                    $num += $one->num;
+                }
+            }
             $value[$i] = $num;
         }
         return $value ;
@@ -61,7 +66,22 @@ class adminFunctionsController extends Controller implements FAQInterface
     // FAQ
     public function get_all(){
 
-        $faqs  = Faq::with('tag')->where('answer' ,'!=' ,'null')->get();
+        $faqs  = Faq::with('tag')->where('answer' ,'!=' ,'null')->orderBy('id', 'DESC')->get();
+
+        if ($faqs == null) {
+            return response()->json([
+                "message" => "عذرا لا يوجد"
+            ], 422);
+        }
+
+        return response()->json([
+            "message" => "قائمة الأسئلة",
+            "data" => $faqs
+        ]);
+    }
+
+    public function get_all_for_admin(){
+        $faqs  = Faq::with('tag')->orderBy('id', 'DESC')->get();
 
         if ($faqs == null) {
             return response()->json([

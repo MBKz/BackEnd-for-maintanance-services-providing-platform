@@ -69,10 +69,11 @@ class OrderController extends Controller
 
         $client = Client::where('user_id', auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('review','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
+        $osrderCurrent = Order::with('review','proposal.initial_order.order_gallery','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
         ->whereHas('proposal.initial_order', function ($q) use($client) {
             $q->where('client_id', $client->id);
-        })->where('state_id', 1)->orWhere('state_id', 3)->get();
+        })->where('state_id', 1)->orWhere('state_id', 3)
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "طلباتي الحالية",
@@ -84,10 +85,11 @@ class OrderController extends Controller
     {
         $client = Client::where('user_id', auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('review','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
+        $osrderCurrent = Order::with('review','proposal.initial_order.order_gallery','proposal.service_provider.user','proposal.initial_order.city','proposal.initial_order.job')
             ->whereHas('proposal.initial_order', function ($q) use ($client){
                 $q->where('client_id', $client->id);
-            })->where('state_id', 4)->get();
+            })->where('state_id', 4)
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "طلباتي المنجزة",
@@ -101,10 +103,11 @@ class OrderController extends Controller
 
         $service_provider = ServiceProvider::where('user_id', auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('review','proposal.initial_order.client.user','proposal.initial_order.city','proposal.initial_order.job')
+        $osrderCurrent = Order::with('review','proposal.initial_order.client.user','proposal.initial_order.city','proposal.initial_order.job','proposal.initial_order.order_gallery')
         ->whereHas('proposal', function ($q) use($service_provider) {
             $q->where('service_provider_id', $service_provider->id);
-        })->where('state_id', 1)->orWhere('state_id', 3)->get();
+        })->where('state_id', 1)->orWhere('state_id', 3)
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "طلباتي الحالية",
@@ -154,10 +157,11 @@ class OrderController extends Controller
     {
         $service_provider = ServiceProvider::where('user_id',  auth()->user()->id)->first();
 
-        $osrderCurrent = Order::with('review','proposal.initial_order.client.user' ,'proposal.initial_order.city','proposal.initial_order.job')
+        $osrderCurrent = Order::with('review','proposal.initial_order.order_gallery','proposal.initial_order.client.user' ,'proposal.initial_order.city','proposal.initial_order.job')
         ->whereHas('proposal', function ($q) use($service_provider){
             $q->where('service_provider_id', $service_provider->id);
-        })->where('state_id', 4)->get();
+        })->where('state_id', 4)
+            ->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "message" => "طلباتي المنجزة",
@@ -167,17 +171,17 @@ class OrderController extends Controller
 
     // admin
     public function all_orders(){
-        $orders = Order::with('review' ,'state')->get();
+        $orders = Order::with('review' ,'state')->orderBy('id', 'DESC')->get();
         return response(['message' => 'قائمة الطلبات' ,'data'=>$orders],200);
     }
 
     public function all_initials(){
-        $orders = InitialOrder::with('job' ,'state' ,'city')->get();
+        $orders = InitialOrder::with('job' ,'state' ,'city')->orderBy('id', 'DESC')->get();
         return response(['message' => 'قائمة الخدمات المطلوبة' ,'data'=>$orders],200);
     }
 
     public function all_proposals(){
-        $orders = Proposal::with('state')->get();
+        $orders = Proposal::with('state')->orderBy('id', 'DESC')->get();
         return response(['message' => 'قائمة عروض الصيانة المقدمة' ,'data'=>$orders],200);
     }
 

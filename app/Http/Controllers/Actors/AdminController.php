@@ -15,7 +15,7 @@ class AdminController extends Controller implements AdminInterface
 
     public function getAdmins()
     {
-        $admin  = Admin::with('user','role')->where('role_id' ,2)->get();
+        $admin  = Admin::with('user','role')->where('role_id' ,2)->orderBy('id', 'DESC')->get();
         return response()->json([
             "message" => "قائمة الموظفين",
             "data" => $admin
