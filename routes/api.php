@@ -38,15 +38,15 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
     Route::post('serviceProvider/login', [LoginController::class, 'loginServiceProvider']);
     Route::post('client/login', [LoginController::class, 'loginClient']);
 
-    // Available for Visitors
+    // jobs
     Route::get('job/get/{id}', [JobController::class, 'show']);
     Route::get('job/get-all', [JobController::class, 'get_all']);
 
+    // cities
     Route::get('city/get/{id}', [CityController::class, 'show']);
     Route::get('city/get-all', [CityController::class, 'get_all']);
 
     Route::get('company/get-all', [CompanyController::class, 'get_all']);
-
     Route::get('FAQ/get-all', [adminFunctionsController::class, 'get_all']);
 
     // Needs Auth
@@ -55,8 +55,8 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         //  profile
         Route::get('client/profile/get', [ClientProfileController::class, 'getProfile']);
         Route::get('serviceProvider/profile/get', [ServiceProviderProfileController::class, 'getProfile']);
-
         Route::post('user/logout', [LogoutController::class, 'logout']);
+
         Route::post('FAQ/add/question', [adminFunctionsController::class, 'AddQuestion']);
 
         //notification
@@ -74,17 +74,19 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Admin
         Route::group(['middleware' => 'admin'], function () {
 
-            // Backup & statistics
+            // Backup & statistics & FAQ
             Route::post('backup', [adminFunctionsController::class, 'backup']);
             Route::get('statistics', [adminFunctionsController::class, 'statistics']);
+            Route::get('FAQ/get', [adminFunctionsController::class, 'get_all_for_admin']);
+            Route::post('FAQ/add/answer/{id}', [adminFunctionsController::class, 'AddAnswer']);
+
 
             // profile
             Route::get('admin/profile/get', [AdminProfileController::class, 'getProfile']);
             Route::post('admin/profile', [AdminProfileController::class, 'editProfile']);
 
-            // clients & FAQ
+            // clients
             Route::get('client/get-all', [ClientController::class, 'get_all']);
-            Route::post('FAQ/add/answer/{id}', [adminFunctionsController::class, 'AddAnswer']);
 
             // job
             Route::post('job/add', [JobController::class, 'store']);
@@ -117,6 +119,11 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
         // ServiceProvider Api
         Route::group(['middleware' => 'serviceProvider'], function () {
+
+            Route::post('notificationTest',function (){
+                $client = \App\Models\ServiceProvider::where('user_id' ,6)->first();
+                $client->notify(new SendPushNotification( 'إدارة النظام','أنت محظور مؤقتا انطح راسك بالحيطة','test tag' ));
+            });
 
             Route::get('proposal/forProvider', [ProposalController::class, 'get_all_for_provider']);
             Route::delete('proposal/delete/{id}', [ProposalController::class, 'destroy']);
@@ -157,10 +164,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
         // Client Api
         Route::group(['middleware' => 'client'], function () {
 
-            Route::post('notificationTest',function (){
-                $client = \App\Models\Client::where('user_id' ,1)->first();
-                $client->notify(new SendPushNotification( 'test title','test the body ...','test tag' ));
-            });
 
             Route::post('client/profile', [ClientProfileController::class, 'editProfile']);
 

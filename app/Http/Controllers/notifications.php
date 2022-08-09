@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class notifications extends Controller
 {
     public function index(){
-        $notifications = Notification::query()->where('user_id',Auth::user()->id)->get();
+        $notifications = Notification::query()->orderBy('id', 'DESC')->where('user_id',Auth::user()->id)->get();
         return response(['message'=>'إشعاراتك' ,'data'=>$notifications],200);
     }
 

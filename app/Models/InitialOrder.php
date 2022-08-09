@@ -35,7 +35,7 @@ class InitialOrder extends Model
     }
     public function order_gallery()
     {
-        return $this->belongsTo(OrderGallery::class);
+        return $this->hasMany(OrderGallery::class);
     }
 
     public function proposal()
