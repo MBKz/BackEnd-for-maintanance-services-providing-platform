@@ -34,7 +34,9 @@ class ReviewController extends Controller
 
         $title = 'جودة و موثوقية العمل';
         $message = 'لقد تم تقييم عملك ذو المعرف #'.$order->id;
-        $provider->notify(new SendPushNotification($title,$message,'order history'));
+        try {
+            $provider->notify(new SendPushNotification($title, $message, 'order history'));
+        }catch (\Exception $e){}
         $user= User::find($provider->user_id);
         $user->notifications()->create([
             'message' => $title,

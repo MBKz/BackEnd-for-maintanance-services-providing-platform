@@ -125,7 +125,9 @@ class InitialOrderController extends Controller
         $message = 'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز ! الطلب ذو المعرف #'.$initialOrder->id;
         $title = 'جاهز للعمل ؟' ;
         foreach ($providers as $provider){
-            $provider->notify(new SendPushNotification($title,$message,'order request'));
+            try {
+                $provider->notify(new SendPushNotification($title, $message, 'order request'));
+            }catch (\Exception $e){}
             $user= User::find($provider->user_id);
             $user->notifications()->create([
                 'message' => $title,
