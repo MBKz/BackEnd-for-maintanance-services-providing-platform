@@ -19,7 +19,7 @@ class isProviderBlocked
     public function handle(Request $request, Closure $next)
     {
         $provider = ModelsServiceProvider::where('user_id', Auth::user()->id)->first();
-        if( $provider->account_status_id  == 3 )    return response(['error'=>'لا يمكنك الوصول'], 403);
+        if( $provider->account_status_id  == 3 )    return response(['error'=>'هذا الحساب محظور ,لايمكنك الوصول'], 403);
         return $next($request);
     }
 }

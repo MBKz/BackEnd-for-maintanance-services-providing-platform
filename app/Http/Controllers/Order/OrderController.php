@@ -46,10 +46,11 @@ class OrderController extends Controller
                 $one->delete();
         }
 
-        // TODO:notify
         $message = 'تم قبول عرض الصيانة ذو المعرف #'.$proposal->id.' الذي قدمته من أجل الخدمة ذو المعرف #'.$proposal->initial_order_id ;
         $provider = ServiceProvider::where('id',$proposal->service_provider_id)->first();
-        $provider->notify(new SendPushNotification('أصبح لديك طلب حالي لإنجازه',$message,'order'));
+        try {
+            $provider->notify(new SendPushNotification('أصبح لديك طلب حالي لإنجازه', $message, 'order'));
+        }catch (\Exception $e){}
         $user= User::find($provider->user_id);
         $user->notifications()->create([
             'message' => 'أصبح لديك طلب حالي لإنجازه',

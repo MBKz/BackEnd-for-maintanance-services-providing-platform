@@ -73,10 +73,11 @@ class ProposalController extends Controller
             'state_id' => 2,
         ]);
 
-        // TODO:notify
         $message = 'لديك عرض صيانة جديد بمعرف #'.$proposal->id.' من أجل الطلب ذو المعرف #'.$proposal->initial_order_id.' سيتم حذف العرض تلقائيا بعد 24 ساعة مالم يتم قبوله' ;
         $client = Client::where('id',$proposal->initial_order->client_id)->first();
-        $client->notify(new SendPushNotification(' عرض صيانة',$message,'proposal'));
+        try {
+            $client->notify(new SendPushNotification(' عرض صيانة', $message, 'proposal'));
+        }catch (\Exception $e){}
         $user= User::find($client->user_id);
         $user->notifications()->create([
             'message' => ' عرض صيانة',

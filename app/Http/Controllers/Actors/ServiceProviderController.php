@@ -91,7 +91,6 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         ]);
     }
 
-    // TODO: notify test
     public function block(Request $request,$id)
     {
         $provider = ServiceProvider::firstWhere('id',$id);
@@ -102,7 +101,10 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
 
 
         $message = 'لقد تم حظر حسابك من قبل المدير لمخالفتك بعض السياسات لايمكنك استقبال طلبات خدمة او تقديم عروض جديدة';
-        $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
+        try {
+            $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
+        }catch (\Exception $e){}
+
         $user= User::find($provider->user_id);
         $user->notifications()->create([
             'message' => 'نشاط الحساب',
@@ -119,7 +121,6 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         return response(['message' => 'تم حظر مزود الخدمة' ,'data' =>$block],200);
     }
 
-    // TODO: notify test
     public function unblock(Request $request,$id)
     {
         $provider = ServiceProvider::firstWhere('id',$id);
@@ -136,7 +137,9 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
         ];
         Notification::route('mail', $provider->user->email)->notify(new MailNotification($arr));
         $message = 'لقد تم فك الحظر عن حسابك يمكنك استئناف نشاطك';
-        $provider->notify(new SendPushNotification('نشاط الحساب',$message,'sys'));
+        try {
+            $provider->notify(new SendPushNotification('نشاط الحساب', $message, 'sys'));
+        }catch (\Exception $e){}
         $user= User::find($provider->user_id);
         $user->notifications()->create([
             'message' => 'نشاط الحساب',
