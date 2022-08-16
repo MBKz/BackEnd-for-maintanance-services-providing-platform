@@ -4,40 +4,42 @@ namespace App\Http\Controllers\Helper;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class HelperController {
 
-    function upload_image_localy(Request $request, $image_name, $path) {
+    public static function upload_image($image, $path) {
 
-        if ($request->hasFile($image_name)) {
-            $image = $request->file($image_name);
-            $filename = time() . $image->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                $path,
-                $image,
-                $filename
-            );
-         return   $image = $request->image = url('/') . '/storage/' . $path  . $filename;
-        } else
-        return   $image = null;
+        if(config('app.upload') == 'cloudinary')    return self::cloudinary_upload($image, $path);
+        else return self::locally_upload($image, $path);
     }
 
-    function upload_array_of_images_localy(Request $request, $image_name, $path, $count) {
+    public static function locally_upload($image, $path){
 
-        if ($request->hasFile($image_name)) {
-            $image = $request->file($image_name);
-            $filename = time() . $image[$count]->getClientOriginalName();
-            Storage::disk('public')->putFileAs(
-                $path,
-                $image[$count],
-                $filename
-            );
-         return   $image = $request->image = url('/') . '/storage/' . $path  . $filename;
-        } else
-        return   $image = null;
+        $filename = time() . $image->getClientOriginalName();
+        Storage::disk('public')->putFileAs(
+            $path,
+            $image,
+            $filename
+        );
+        return   url('/') . '/storage/' . $path  . $filename;
     }
 
-    public static function notify(){
+    public static function cloudinary_upload($image, $path){
 
+        try {
+            return Cloudinary::upload($image->getRealPath(), ['folder' => $path])->getSecurePath();
+        }catch (\Exception ){}
     }
+
+    public static function cloudinary_delete($url){
+
+        $link = explode('/' , $url);
+        $size = count($link);
+        $publicId = $link[$size-3] . '/' . $link[$size-2] . '/' . explode('.',$link[$size-1])[0];
+        try {
+            return Cloudinary::destroy($publicId);
+        }catch (\Exception $e){}
+    }
+
 }

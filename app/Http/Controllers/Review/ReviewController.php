@@ -52,6 +52,8 @@ class ReviewController extends Controller
     }
 
     public function destroy($id){
+        $order = Order::query()->where('review_id',$id)->first();
+        $order->update(['review_id' => null]);
         $review = Review::query()->where('id',$id)->first();
         $review->delete();
         return response(['message'=>'تم حذف التقييم'],200);

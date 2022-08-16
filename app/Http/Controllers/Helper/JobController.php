@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Helper;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Helper\HelperController;
 use App\Http\Interface\Helper\JobInterface;
 use App\Models\Job;
 use Illuminate\Http\Request;
@@ -21,6 +20,15 @@ class JobController extends Controller implements JobInterface
         ]);
     }
 
+    public function show($id)
+    {
+        $job = Job::find($id);
+        if ($job == null) {
+            return response(["error" => "عذرا غير موجود"], 404);
+        }
+        return response(["message" => "معلومات الخدمة", "data" => $job]);
+    }
+
     public function store(Request $request)
     {
         $input = $request->all();
@@ -34,9 +42,8 @@ class JobController extends Controller implements JobInterface
             return response(['error' => $validator->errors()->all()], 422);
         }
 
-       $upload = new HelperController();
-       $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
-       $image =  $upload->upload_image_localy($request,'image','Job/image/');
+        $icon =  HelperController::upload_image($request->file('icon'), 'Khalea-alena_app/job_icon');
+        $image =  HelperController::upload_image($request->file('image'), 'Khalea-alena_app/job_image');
 
         $job = Job::create([
             'title' => $request->title,
@@ -48,21 +55,6 @@ class JobController extends Controller implements JobInterface
             "message" => "تمت إضافة خدمة جديدة",
             "data" => $job
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $job = Job::find($id);
-        if ($job == null) {
-            return response(["error" => "عذرا غير موجود"], 404);
-        }
-        return response(["message" => "معلومات الخدمة", "data" => $job]);
     }
 
     public function update(Request $request,$id)
@@ -77,15 +69,16 @@ class JobController extends Controller implements JobInterface
             return response(['error' => $validator->errors()->all()], 422);
         }
 
-        $upload = new HelperController();
-        $icon =  $upload->upload_image_localy($request,'icon','Job/icon/');
-        $image =  $upload->upload_image_localy($request,'image','Job/image/');
-
         if ($request->title != null)  $job['title'] = $request->title;
         if ($request->description != null)   $job['description'] = $request->description;
-        if ($request->icon != null)       $job['icon'] = $icon;
-        if ($request->image != null)       $job['image'] = $image;
-
+        if ($request->icon != null){
+            if($job['image'] != null)  HelperController::cloudinary_delete($job['icon']);
+            $job['icon'] = HelperController::upload_image($request->file('icon'), 'Khalea-alena_app/job_icon');
+        }
+        if ($request->image != null) {
+            if($job['image'] != null)  HelperController::cloudinary_delete($job['image']);
+            $job['image'] = HelperController::upload_image($request->file('image'), 'Khalea-alena_app/job_image');
+        }
 
         $job->update();
 
@@ -103,6 +96,8 @@ class JobController extends Controller implements JobInterface
                 "error" => " عذرا غير موجود"
             ], 404);
         }
+        HelperController::cloudinary_delete($job->image);
+        HelperController::cloudinary_delete($job->icon);
         $job->delete();
         return response()->json([
             "message" => "تمت عملية الحذف بنجاح",

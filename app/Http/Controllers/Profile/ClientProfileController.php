@@ -8,7 +8,6 @@ use App\Http\Interface\Profile\ProfileInterface;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ClientProfileController extends Controller implements ProfileInterface
@@ -36,12 +35,12 @@ class ClientProfileController extends Controller implements ProfileInterface
             return response(['error' => $validator->errors()->all()], 422);
         }
 
-        $upload = new HelperController();
-        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ClientProfile/');
-
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
-        if ($request->image != null)       $user['image'] = $image;
+        if ($request->image != null){
+            if($user['image'] != null)  HelperController::cloudinary_delete($user['image']);
+            $user['image'] =  HelperController::upload_image($request->file('image'), 'Khalea-alena_app/profiles');
+        }
 
         $user->update();
 
