@@ -34,12 +34,9 @@ class RegisterController extends Controller implements RegisterInterface
             return response()->json(['error' => $validator->errors()], 401);
         }
 
-        $upload = new HelperController();
-        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/ServiceProviderProfile/IdentityPhoto/');
-
         $identity = Identity::create([
             'number' => $request->number,
-            'image' => $image
+            'image' => HelperController::upload_image($request->file('image'), 'Khalea-alena_app/Identities/')
         ]);
 
         $request['password'] = bcrypt($request['password']);

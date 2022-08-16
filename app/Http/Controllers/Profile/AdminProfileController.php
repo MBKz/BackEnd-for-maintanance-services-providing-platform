@@ -23,7 +23,7 @@ class AdminProfileController extends Controller implements ProfileInterface
         return response()->json(['message' =>  'المعلومات الشخصية','data' => $admin]);
     }
 
-  
+
     public function editProfile(Request $request)
     {
 
@@ -36,12 +36,12 @@ class AdminProfileController extends Controller implements ProfileInterface
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        $upload = new HelperController();
-        $image =  $upload->upload_image_localy($request, 'image', 'UserPhoto/AdminProfile/');
-
         if ($request->password != null)    $user['password'] = bcrypt($request['password']);
         if ($request->phone_number != null) $user['phone_number'] = $request->phone_number;
-        if ($request->image != null)       $user['image'] = $image;
+        if ($request->image != null){
+            if($user['image'] != null)  HelperController::cloudinary_delete($user['image']);
+            $user['image'] = HelperController::upload_image($request->file('image'), 'Khalea-alena_app/profiles');
+        }
 
         $user->update();
         return response()->json(['message' =>  'تمت عملية التعديل بنجاح']);

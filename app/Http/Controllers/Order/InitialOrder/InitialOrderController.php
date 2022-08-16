@@ -96,24 +96,19 @@ class InitialOrderController extends Controller
         ]);
 
 
-        // image process
-        $upload = new HelperController();
-
-        $images = $request->image;
         if ($request->image != null) {
-            $echImages[count($images)] = null;
+            $images = $request->image;
             for ($i = 0; $i < count($images); $i++) {
-                $image =  $upload->upload_array_of_images_localy($request, 'image', 'initialOrder/', $i);
+                $image = $request->file('image')[$i];
+                $link = HelperController::upload_image($image, 'Khalea-alena_app/initial_orders');
                 $initialOrder->order_gallery()->create([
                     'title' => $request->title,
-                    'image' => $image,
+                    'image' => $link,
                     'initial_order_id' => $initialOrder->id
                 ]);
             }
         }
 
-        // notify all related service provider
-        //TODO: test
         $providers = ServiceProvider::select('id','user_id','device_token')
             ->where('city_id' ,$initialOrder->city_id)
             ->where('job_id' ,$initialOrder->job_id)
@@ -121,7 +116,6 @@ class InitialOrderController extends Controller
             ->where('device_token' ,'!=', null)
             ->get();
 
-        // TODO:notify
         $message = 'هناك من يحتاج إلى خدمة صيانة ,هل أنت جاهز ! الطلب ذو المعرف #'.$initialOrder->id;
         $title = 'جاهز للعمل ؟' ;
         foreach ($providers as $provider){

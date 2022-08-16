@@ -48,18 +48,14 @@ class PostController extends Controller implements PostInterface
             'date' => $request->date,
         ]);
 
-        $upload = new HelperController();
-
-        $images = $request->image;
         if ($request->image != null) {
-
+            $images = $request->image;
             for ($i = 0; $i < count($images); $i++) {
-
-                $image =  $upload->upload_array_of_images_localy($request, 'image', 'ServiceProvider/Posts/', $i);
-
+                $image = $request->file('image')[$i];
+                $link = HelperController::upload_image($image, 'Khalea-alena_app/posts');
                 $post->posts_gallery()->create([
                     'title' => $request->title,
-                    'image' => $image,
+                    'image' => $link,
                 ]);
             }
         }
@@ -99,6 +95,7 @@ class PostController extends Controller implements PostInterface
 
         $photos = $post->posts_gallery;
         foreach ($photos as $photo) {
+            HelperController::cloudinary_delete($photo->image);
             $photo->delete();
         }
         $post->delete();
