@@ -48,7 +48,7 @@ class ServiceProvider extends Model
 
     public function proposal()
     {
-        return $this->belongsTo(Proposal::class);
+        return $this->hasMany(Proposal::class);
     }
 
     public function block()
