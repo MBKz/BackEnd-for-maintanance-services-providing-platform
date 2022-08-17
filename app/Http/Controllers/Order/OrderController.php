@@ -56,7 +56,7 @@ class OrderController extends Controller
             'message' => 'أصبح لديك طلب حالي لإنجازه',
             'body' => $message,
             'checked' => false,
-            'date' => Carbon::now()->addHour(3)
+            'date' => Carbon::now()
         ]);
 
 
@@ -121,7 +121,7 @@ class OrderController extends Controller
         $order = Order::find($id);
 
         $order->update([
-            'start_date' => now()->addHour(3),
+            'start_date' => now(),
             'state_id' => 3
         ]);
 
@@ -143,7 +143,7 @@ class OrderController extends Controller
         $order = Order::find($id);
 
         $order->update([
-            'end_date' => now()->addHour(3),
+            'end_date' => now(),
             'state_id' => 4,
             'cost' => $request->cost
         ]);

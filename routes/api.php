@@ -98,11 +98,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
             Route::post('city/update/{id}', [CityController::class, 'update']);
             Route::delete('city/delete/{id}', [CityController::class, 'destroy']);
 
-//            //    company
-//            Route::post('company/add', [CompanyController::class, 'store']);
-//            Route::post('company/update/{id}', [CompanyController::class, 'update']);
-//            Route::delete('company/delete/{id}', [CompanyController::class, 'destroy']);
-
             //  service providers manage
             Route::get('serviceProvider/requests/get-all', [ServiceProviderController::class, 'getProviderRequests']);
             Route::post('serviceProvider/active/{id}', [ServiceProviderController::class, 'AcceptProvider']);
@@ -119,11 +114,6 @@ Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
         // ServiceProvider Api
         Route::group(['middleware' => 'serviceProvider'], function () {
-
-            Route::post('notificationTest',function (){
-                $client = \App\Models\ServiceProvider::where('user_id' ,6)->first();
-                $client->notify(new SendPushNotification( 'إدارة النظام','أنت محظور مؤقتا انطح راسك بالحيطة','test tag' ));
-            });
 
             Route::get('proposal/forProvider', [ProposalController::class, 'get_all_for_provider']);
             Route::delete('proposal/delete/{id}', [ProposalController::class, 'destroy']);

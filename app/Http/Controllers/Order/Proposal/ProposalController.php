@@ -83,7 +83,7 @@ class ProposalController extends Controller
             'message' => ' عرض صيانة',
             'body' => $message,
             'checked' => false,
-            'date' => Carbon::now()->addHour(3)
+            'date' => Carbon::now()
         ]);
 
         return response()->json([

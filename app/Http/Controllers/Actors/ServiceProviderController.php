@@ -110,7 +110,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             'message' => 'نشاط الحساب',
             'body' => $message,
             'checked' => false,
-            'date' => Carbon::now()->addHour(3)
+            'date' => Carbon::now()
         ]);
 
         $block =$provider->block()->create([
@@ -145,7 +145,7 @@ class ServiceProviderController extends Controller implements ServiceProviderInt
             'message' => 'نشاط الحساب',
             'body' => $message,
             'checked' => false,
-            'date' => Carbon::now()->addHour(3)
+            'date' => Carbon::now()
         ]);
 
         $provider->block()->delete();
