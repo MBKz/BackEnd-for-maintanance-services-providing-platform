@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Helper;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 

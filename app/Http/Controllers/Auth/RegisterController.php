@@ -96,4 +96,5 @@ class RegisterController extends Controller implements RegisterInterface
             'message' =>  'تمت عملية تسجيل الحساب بنجاح .'
         ]);
     }
+
 }

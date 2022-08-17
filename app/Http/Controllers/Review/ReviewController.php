@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Review;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Proposal;
 use App\Models\Review;
 use App\Models\ServiceProvider;
 use App\Models\User;
@@ -52,9 +53,21 @@ class ReviewController extends Controller
     }
 
     public function destroy($id){
-        $order = Order::query()->where('review_id',$id)->first();
-        $order->update(['review_id' => null]);
         $review = Review::query()->where('id',$id)->first();
+        $order = Order::query()->where('review_id',$id)->first();
+        $prop = Proposal::query()->where('id' ,$order->proposal_id)->first();
+        $provider = ServiceProvider::query()->where('id',$prop->service_provider_id)->first();
+        if ($provider->num_of_raters - 1 == 0) { $rate = null ; $raters = null;}
+        else   {
+            $rate = round((($provider->rate * $provider->num_of_raters) - $review->rate) / ($provider->num_of_raters - 1), 2);
+            $raters = $provider->num_of_raters -1;
+        }
+
+        $provider->update([
+            'rate' =>  $rate,
+            'num_of_raters' => $raters
+        ]);
+        $order->update(['review_id' => null]);
         $review->delete();
         return response(['message'=>'تم حذف التقييم'],200);
     }

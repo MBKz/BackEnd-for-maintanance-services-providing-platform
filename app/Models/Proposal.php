@@ -10,7 +10,7 @@ class Proposal extends Model
     use HasFactory;
 
     public $timestamps = false;
-    
+
     protected $fillable = [
         'estimation_time', 'estimation_cost', 'note',
         'date', 'service_provider_id', 'initial_order_id', 'state_id',
@@ -31,7 +31,7 @@ class Proposal extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->hasOne(Order::class);
     }
 
 }
