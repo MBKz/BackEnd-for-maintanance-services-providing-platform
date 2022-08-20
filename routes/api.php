@@ -20,9 +20,20 @@ use App\Http\Controllers\Order\Proposal\ProposalController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Review\ReviewController;
 use App\Http\Controllers\SysInfo\CompanyController;
-use App\Notifications\SendPushNotification;
 use Illuminate\Support\Facades\Route;
 
+
+/*
+ *TODO:
+ *  initial the passport package to start after refreshing the database by executing:
+ *              $-  php artisan passport:client --personal
+ * check if the Storage is linked if you're uploading the files to the server not to cloudinary by executing:
+ *              $-  php artisan Storage:link
+ * if you faced any caching problem free the cache by executing:
+ *              $-  php artisan route:clear
+ *              $-  php artisan cache:clear
+ *              $-  php artisan config:clear
+ */
 
 Route::group(['middleware' => ['cors','JsonResponse']], function () {
 
